@@ -1,6 +1,12 @@
 /* assets/js/script.js
-   Updated: shipping rates adjusted, free shipping above ₹500,
-   live shipping calculator UI, ETA estimates, and full order behavior.
+   Full script (replace existing file)
+   - India base shipping set to ₹40
+   - Adjusted international rates
+   - Free shipping above ₹500
+   - Live shipping calculator UI (weight, tier, ETA)
+   - Sticky header, mobile menu, dark mode
+   - Hero & product slideshows, lightbox
+   - Order preview, save draft, WhatsApp send
 */
 
 /* Utilities */
@@ -8,7 +14,7 @@ const $ = sel => document.querySelector(sel);
 const $$ = sel => Array.from(document.querySelectorAll(sel));
 const safe = fn => { try { return fn(); } catch(e){ console.warn(e); } };
 
-/* ================= HEADER, MENU, DARKMODE (unchanged behavior) ================= */
+/* ================= HEADER, MENU, DARKMODE ================= */
 (function headerAndUI(){
   const header = document.querySelector('.site-header') || document.querySelector('header');
   const menuBtn = document.getElementById('menuBtn');
@@ -36,7 +42,7 @@ const safe = fn => { try { return fn(); } catch(e){ console.warn(e); } };
     window.addEventListener('resize', updateNav);
   }
 
-  // Dark toggle
+  // Dark toggle (persist)
   const DARK_KEY = 'greenwrite_dark_v1';
   const darkToggle = document.getElementById('darkToggle');
   const mobileDarkToggle = document.getElementById('mobileDarkToggle');
@@ -161,16 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
   top.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 })();
 
-/* ================= SHIPPING RATES & ETA SETTINGS (ADJUSTED) ================= */
-/*
-  Updated shipping prices (more realistic / competitive).
-  - Free shipping above FREE_SHIPPING_MIN_ORDER (₹500) applies globally.
-  - Rates are tiered by weight ranges (maxKg).
-*/
+/* ================= SHIPPING RATES & ETA SETTINGS ================= */
+/* Free shipping threshold and packaging */
 const FREE_SHIPPING_MIN_ORDER = 500; // ₹500 -> free shipping threshold
 const BULK_FREE_QTY = 50;
 const packagingWeightG = 30; // packaging grams
 
+/* Shipping rates: India base = ₹40 (first tier) */
 const shippingRates = {
   "IN":[ {maxKg:0.25,cost:40},{maxKg:0.5,cost:70},{maxKg:1.0,cost:110},{maxKg:2.0,cost:180},{maxKg:5.0,cost:320} ],
   "US":[ {maxKg:0.25,cost:600},{maxKg:0.5,cost:900},{maxKg:1.0,cost:1300},{maxKg:2.0,cost:2200},{maxKg:5.0,cost:3600} ],
@@ -179,7 +182,7 @@ const shippingRates = {
   "OTHER":[ {maxKg:0.25,cost:900},{maxKg:0.5,cost:1300},{maxKg:1.0,cost:2000},{maxKg:2.0,cost:3400},{maxKg:5.0,cost:5600} ]
 };
 
-/* ETA rules (simple): returns string of estimated delivery days */
+/* ETA estimator */
 function estimateETA(countryCode, weightKg){
   countryCode = (countryCode || 'IN').toUpperCase();
   if (countryCode === 'IN'){
@@ -188,22 +191,19 @@ function estimateETA(countryCode, weightKg){
     if (weightKg <= 2) return '7-10 business days';
     return '10-14 business days';
   }
-  // International
   if (countryCode === 'US' || countryCode === 'UK' || countryCode === 'AU'){
     if (weightKg <= 0.5) return '7-12 business days';
     if (weightKg <= 1) return '10-15 business days';
     if (weightKg <= 2) return '12-20 business days';
     return '18-30 business days';
   }
-  // OTHER
   if (weightKg <= 0.5) return '10-18 business days';
   if (weightKg <= 1) return '12-22 business days';
   return '20-35 business days';
 }
 
-/* ================= LIVE SHIPPING CALCULATOR UI: creates panel if missing ================= */
+/* ================= SHIPPING CALCULATOR PANEL (auto-insert) ================= */
 function ensureShippingPanel(){
-  // find summary box (we used class .summary-box)
   const summary = document.querySelector('.summary-box') || (document.querySelector('.order-form') && document.querySelector('.order-form'));
   if (!summary) return null;
   let panel = document.getElementById('shipCalcPanel');
@@ -251,10 +251,10 @@ function ensureShippingPanel(){
   const saveLocalBtn = document.getElementById('saveLocal');
   const successModal = document.getElementById('successModal');
   const closeSuccess = document.getElementById('closeSuccess');
+  const paymentArea = document.getElementById('paymentArea');
 
   if (!productSelect || !qtyInput || !countrySelect || !itemsTotalEl || !shipCostEl || !grandTotalEl) return;
 
-  // product weights map (grams)
   const productWeightMap = { "Plantable Pen":12, "Plantable Pencil":10, "Combo Pack":25 };
 
   function calcTotals(){
@@ -291,12 +291,10 @@ function ensureShippingPanel(){
       const tier = panel.querySelector('#shipTier');
       if (estWeight) estWeight.textContent = `${(totalWeightKg).toFixed(2)} kg`;
       if (eta) eta.textContent = estimateETA(countryCode, totalWeightKg);
-      // find matching tier description
       let tierText = 'Standard';
       for (let i=0;i<table.length;i++){
         if (totalWeightKg <= table[i].maxKg){ tierText = `Up to ${table[i].maxKg} kg • ₹${table[i].cost}`; break; }
       }
-      // free shipping note
       if (shipCost === 0) tierText = 'Free shipping';
       if (tier) tier.textContent = tierText;
     }
@@ -304,13 +302,11 @@ function ensureShippingPanel(){
     return { price, qty, itemTotal, totalWeightKg, shipCost, grand: itemTotal + shipCost, eta: estimateETA(countryCode, totalWeightKg) };
   }
 
-  // reactive updates
   productSelect.addEventListener('change', calcTotals);
   qtyInput.addEventListener('input', calcTotals);
   countrySelect.addEventListener('change', calcTotals);
   document.addEventListener('DOMContentLoaded', calcTotals);
 
-  // Save draft
   if (saveLocalBtn) saveLocalBtn.addEventListener('click', () => {
     const d = {
       name: (document.getElementById('name') && document.getElementById('name').value) || '',
@@ -326,7 +322,6 @@ function ensureShippingPanel(){
     try { localStorage.setItem('greenwrite_draft', JSON.stringify(d)); alert('Draft saved locally.'); } catch(e){ alert('Could not save draft.'); }
   });
 
-  // Preview
   if (previewBtn) previewBtn.addEventListener('click', () => {
     const t = calcTotals();
     const name = (document.getElementById('name') && document.getElementById('name').value) || '-';
@@ -348,12 +343,10 @@ function ensureShippingPanel(){
     if (paymentArea) paymentArea.style.display = 'none';
   });
 
-  // modal actions
   if (editOrder) editOrder.addEventListener('click', () => { if (orderModal) { orderModal.classList.remove('show'); orderModal.setAttribute('aria-hidden','true'); } });
   if (confirmOrder) confirmOrder.addEventListener('click', () => { if (paymentArea) paymentArea.style.display = 'block'; });
   if (closeModal) closeModal.addEventListener('click', () => { if (orderModal) { orderModal.classList.remove('show'); orderModal.setAttribute('aria-hidden','true'); } });
 
-  // Submit -> save & open WhatsApp
   if (orderForm) orderForm.addEventListener('submit', function(e){
     e.preventDefault();
     const nameVal = (document.getElementById('name') && document.getElementById('name').value.trim()) || '';
@@ -374,22 +367,17 @@ function ensureShippingPanel(){
       eta: t.eta,
       timestamp: new Date().toISOString()
     };
-    // store locally
     try { const all = JSON.parse(localStorage.getItem('greenwrite_orders') || '[]'); all.unshift(order); localStorage.setItem('greenwrite_orders', JSON.stringify(all)); } catch(e){}
-
-    // open WhatsApp with message including ETA
     const waNo = '584161689126';
     const text = encodeURIComponent(
       `GreenWrite order:%0AName: ${order.name}%0APhone: ${order.phone}%0AEmail: ${order.email}%0AProduct: ${order.product} x${order.qty}%0AShipping: ${order.shippingCountry} (₹${order.shippingCost})%0AETA: ${order.eta}%0ATotal: ₹${order.total}%0ANote: ${order.note}`
     );
     window.open(`https://wa.me/${waNo}?text=${text}`, '_blank');
-
     if (successModal) { successModal.classList.add('show'); successModal.setAttribute('aria-hidden','false'); }
   });
 
   if (closeSuccess) closeSuccess.addEventListener('click', () => { if (successModal) { successModal.classList.remove('show'); successModal.setAttribute('aria-hidden','true'); } });
 
-  // load draft if present
   (function loadDraft(){
     try {
       const d = JSON.parse(localStorage.getItem('greenwrite_draft') || 'null');
@@ -405,7 +393,6 @@ function ensureShippingPanel(){
     } catch(e){}
   })();
 
-  // helper escape
   function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[s])); }
 })();
 
@@ -420,7 +407,6 @@ function ensureShippingPanel(){
         [...prodSelect.options].forEach(opt => { opt.selected = (opt.value === name); });
       }
       if (qty) qty.value = 1;
-      // trigger totals update
       const ev = new Event('input'); qty && qty.dispatchEvent(ev);
       const orderSec = document.getElementById('order');
       if (orderSec) orderSec.scrollIntoView({ behavior: 'smooth' });
@@ -437,7 +423,5 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* ================= IMAGE ERROR WARNING (non-blocking) ================= */
-(function imageWarnings(){
-  $$('img').forEach(img => img.addEventListener('error', () => console.warn('Image failed to load:', img.src)));
-})();
+/* ================= IMAGE ERROR LOGGING ================= */
+(function imageWarnings(){ $$('img').forEach(img => img.addEventListener('error', () => console.warn('Image failed to load:', img.src))); })();
