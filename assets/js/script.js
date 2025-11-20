@@ -1,12 +1,8 @@
 /* assets/js/script.js
    Full script (replace existing file)
-   - India base shipping set to ₹40
-   - Adjusted international rates
-   - Free shipping above ₹500
-   - Live shipping calculator UI (weight, tier, ETA)
-   - Sticky header, mobile menu, dark mode
-   - Hero & product slideshows, lightbox
-   - Order preview, save draft, WhatsApp send
+   - Builds a clean multi-line WhatsApp order message
+   - Adds 'Website created by Bharat' note in the message
+   - Keeps shipping calculator, ETA, preview, save draft, etc.
 */
 
 /* Utilities */
@@ -168,12 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
 })();
 
 /* ================= SHIPPING RATES & ETA SETTINGS ================= */
-/* Free shipping threshold and packaging */
 const FREE_SHIPPING_MIN_ORDER = 500; // ₹500 -> free shipping threshold
 const BULK_FREE_QTY = 50;
 const packagingWeightG = 30; // packaging grams
 
-/* Shipping rates: India base = ₹40 (first tier) */
 const shippingRates = {
   "IN":[ {maxKg:0.25,cost:40},{maxKg:0.5,cost:70},{maxKg:1.0,cost:110},{maxKg:2.0,cost:180},{maxKg:5.0,cost:320} ],
   "US":[ {maxKg:0.25,cost:600},{maxKg:0.5,cost:900},{maxKg:1.0,cost:1300},{maxKg:2.0,cost:2200},{maxKg:5.0,cost:3600} ],
@@ -182,7 +176,6 @@ const shippingRates = {
   "OTHER":[ {maxKg:0.25,cost:900},{maxKg:0.5,cost:1300},{maxKg:1.0,cost:2000},{maxKg:2.0,cost:3400},{maxKg:5.0,cost:5600} ]
 };
 
-/* ETA estimator */
 function estimateETA(countryCode, weightKg){
   countryCode = (countryCode || 'IN').toUpperCase();
   if (countryCode === 'IN'){
@@ -330,7 +323,7 @@ function ensureShippingPanel(){
     const html = `
       <div><strong>Name:</strong> ${escapeHtml(name)}</div>
       <div><strong>Phone:</strong> ${escapeHtml(phone)}</div>
-      <div><strong>Product:</strong> ${escapeHtml(productSelect.value)} x ${t.qty} @ ₹${t.price}</div>
+      <div><strong>Product:</strong> ${escapeHtml(productSelect.value)} x ${t.qty} — ₹${t.price} each</div>
       <div style="display:flex;justify-content:space-between"><div>Items</div><div>₹${t.itemTotal}</div></div>
       <div style="display:flex;justify-content:space-between"><div>Shipping</div><div>₹${t.shipCost}</div></div>
       <hr/>
@@ -368,11 +361,31 @@ function ensureShippingPanel(){
       timestamp: new Date().toISOString()
     };
     try { const all = JSON.parse(localStorage.getItem('greenwrite_orders') || '[]'); all.unshift(order); localStorage.setItem('greenwrite_orders', JSON.stringify(all)); } catch(e){}
+
+    // --- Build nice WhatsApp message (multi-line) ---
+    const countryNames = { IN: 'India', US: 'United States', UK: 'United Kingdom', AU: 'Australia', OTHER: 'Other' };
+    const countryLabel = countryNames[(order.shippingCountry || 'IN').toUpperCase()] || order.shippingCountry || '—';
+    const itemsLine = `${order.product} x${order.qty} — ₹${order.priceEach} each (₹${order.priceEach * order.qty})`;
+
+    const messageLines = [
+      "🌱 GreenWrite — Order",
+      `Name: ${order.name}`,
+      `Phone: ${order.phone}`,
+      `Email: ${order.email || '-'}`,
+      `Product: ${itemsLine}`,
+      `Shipping: ${countryLabel} (${(order.shippingCountry || '').toUpperCase()}) — ₹${order.shippingCost}`,
+      `ETA: ${order.eta}`,
+      `Total: ₹${order.total}`,
+      `Note: ${order.note || '-'}`,
+      "",
+      "Ordered via: Website created by Bharat — Team GreenWrite"
+    ];
+    const message = messageLines.join("\n");
+    const encoded = encodeURIComponent(message);
+
     const waNo = '584161689126';
-    const text = encodeURIComponent(
-      `GreenWrite order:%0AName: ${order.name}%0APhone: ${order.phone}%0AEmail: ${order.email}%0AProduct: ${order.product} x${order.qty}%0AShipping: ${order.shippingCountry} (₹${order.shippingCost})%0AETA: ${order.eta}%0ATotal: ₹${order.total}%0ANote: ${order.note}`
-    );
-    window.open(`https://wa.me/${waNo}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${waNo}?text=${encoded}`, '_blank');
+
     if (successModal) { successModal.classList.add('show'); successModal.setAttribute('aria-hidden','false'); }
   });
 
