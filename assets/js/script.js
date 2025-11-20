@@ -1,8 +1,13 @@
 /* assets/js/script.js
    Full script (replace existing file)
-   - Builds a clean multi-line WhatsApp order message
-   - Adds 'Website created by Bharat' note in the message
-   - Keeps shipping calculator, ETA, preview, save draft, etc.
+   - India base shipping set to ₹40
+   - Adjusted international rates
+   - Free shipping above ₹500
+   - Live shipping calculator UI (weight, tier, ETA)
+   - Mobile-safe WhatsApp opening (uses whatsapp:// then api.whatsapp.com fallback)
+   - Sticky header, mobile menu, dark mode
+   - Hero & product slideshows, lightbox
+   - Order preview, save draft, WhatsApp send, success modal
 */
 
 /* Utilities */
@@ -164,10 +169,12 @@ document.addEventListener('DOMContentLoaded', () => {
 })();
 
 /* ================= SHIPPING RATES & ETA SETTINGS ================= */
+/* Free shipping threshold and packaging */
 const FREE_SHIPPING_MIN_ORDER = 500; // ₹500 -> free shipping threshold
 const BULK_FREE_QTY = 50;
 const packagingWeightG = 30; // packaging grams
 
+/* Shipping rates: India base = ₹40 (first tier) */
 const shippingRates = {
   "IN":[ {maxKg:0.25,cost:40},{maxKg:0.5,cost:70},{maxKg:1.0,cost:110},{maxKg:2.0,cost:180},{maxKg:5.0,cost:320} ],
   "US":[ {maxKg:0.25,cost:600},{maxKg:0.5,cost:900},{maxKg:1.0,cost:1300},{maxKg:2.0,cost:2200},{maxKg:5.0,cost:3600} ],
@@ -176,6 +183,7 @@ const shippingRates = {
   "OTHER":[ {maxKg:0.25,cost:900},{maxKg:0.5,cost:1300},{maxKg:1.0,cost:2000},{maxKg:2.0,cost:3400},{maxKg:5.0,cost:5600} ]
 };
 
+/* ETA rules (simple): returns string of estimated delivery days */
 function estimateETA(countryCode, weightKg){
   countryCode = (countryCode || 'IN').toUpperCase();
   if (countryCode === 'IN'){
@@ -184,12 +192,14 @@ function estimateETA(countryCode, weightKg){
     if (weightKg <= 2) return '7-10 business days';
     return '10-14 business days';
   }
+  // International
   if (countryCode === 'US' || countryCode === 'UK' || countryCode === 'AU'){
     if (weightKg <= 0.5) return '7-12 business days';
     if (weightKg <= 1) return '10-15 business days';
     if (weightKg <= 2) return '12-20 business days';
     return '18-30 business days';
   }
+  // OTHER
   if (weightKg <= 0.5) return '10-18 business days';
   if (weightKg <= 1) return '12-22 business days';
   return '20-35 business days';
@@ -248,6 +258,7 @@ function ensureShippingPanel(){
 
   if (!productSelect || !qtyInput || !countrySelect || !itemsTotalEl || !shipCostEl || !grandTotalEl) return;
 
+  // product weights map (grams)
   const productWeightMap = { "Plantable Pen":12, "Plantable Pencil":10, "Combo Pack":25 };
 
   function calcTotals(){
@@ -284,10 +295,12 @@ function ensureShippingPanel(){
       const tier = panel.querySelector('#shipTier');
       if (estWeight) estWeight.textContent = `${(totalWeightKg).toFixed(2)} kg`;
       if (eta) eta.textContent = estimateETA(countryCode, totalWeightKg);
+      // find matching tier description
       let tierText = 'Standard';
       for (let i=0;i<table.length;i++){
         if (totalWeightKg <= table[i].maxKg){ tierText = `Up to ${table[i].maxKg} kg • ₹${table[i].cost}`; break; }
       }
+      // free shipping note
       if (shipCost === 0) tierText = 'Free shipping';
       if (tier) tier.textContent = tierText;
     }
@@ -295,11 +308,13 @@ function ensureShippingPanel(){
     return { price, qty, itemTotal, totalWeightKg, shipCost, grand: itemTotal + shipCost, eta: estimateETA(countryCode, totalWeightKg) };
   }
 
+  // reactive updates
   productSelect.addEventListener('change', calcTotals);
   qtyInput.addEventListener('input', calcTotals);
   countrySelect.addEventListener('change', calcTotals);
   document.addEventListener('DOMContentLoaded', calcTotals);
 
+  // Save draft
   if (saveLocalBtn) saveLocalBtn.addEventListener('click', () => {
     const d = {
       name: (document.getElementById('name') && document.getElementById('name').value) || '',
@@ -315,6 +330,116 @@ function ensureShippingPanel(){
     try { localStorage.setItem('greenwrite_draft', JSON.stringify(d)); alert('Draft saved locally.'); } catch(e){ alert('Could not save draft.'); }
   });
 
+  /* -----------------------
+     ORDER SUBMIT / WHATSAPP
+     Mobile-safe: encode once, prefer whatsapp:// then fallback to api.whatsapp.com / wa.me
+     ----------------------- */
+  if (orderForm) orderForm.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const nameVal = (document.getElementById('name') && document.getElementById('name').value.trim()) || '';
+    const phoneVal = (document.getElementById('phone') && document.getElementById('phone').value.trim()) || '';
+    if (!nameVal || !phoneVal){ alert('Please enter name and phone.'); return; }
+
+    const t = calcTotals();
+    const order = {
+      name: nameVal,
+      phone: phoneVal,
+      email: (document.getElementById('email') && document.getElementById('email').value.trim()) || '',
+      product: productSelect.value,
+      priceEach: t.price,
+      qty: t.qty,
+      shippingCountry: countrySelect.value,
+      shippingCost: t.shipCost,
+      total: t.grand,
+      note: (document.getElementById('note') && document.getElementById('note').value.trim()) || '',
+      eta: t.eta,
+      timestamp: new Date().toISOString()
+    };
+
+    // store locally
+    try { const all = JSON.parse(localStorage.getItem('greenwrite_orders') || '[]'); all.unshift(order); localStorage.setItem('greenwrite_orders', JSON.stringify(all)); } catch(e){}
+
+    // Build human-friendly message (plain text)
+    const countryNames = { IN: 'India', US: 'United States', UK: 'United Kingdom', AU: 'Australia', OTHER: 'Other' };
+    const countryLabel = countryNames[(order.shippingCountry || 'IN').toUpperCase()] || order.shippingCountry || '—';
+    const itemsLine = `${order.product} x${order.qty} — ₹${order.priceEach} each (₹${order.priceEach * order.qty})`;
+
+    const messageLines = [
+      "🌱 GreenWrite — Order",
+      `Name: ${order.name}`,
+      `Phone: ${order.phone}`,
+      `Email: ${order.email || '-'}`,
+      `Product: ${itemsLine}`,
+      `Shipping: ${countryLabel} (${(order.shippingCountry || '').toUpperCase()}) — ₹${order.shippingCost}`,
+      `ETA: ${order.eta}`,
+      `Total: ₹${order.total}`,
+      `Note: ${order.note || '-'}`,
+      "",
+      "Ordered via: Website created by Bharat — Team GreenWrite"
+    ];
+    const message = messageLines.join("\n");
+
+    // Encode exactly once
+    const encoded = encodeURIComponent(message);
+
+    // Preferred WhatsApp targets
+    const waNumber = '584161689126';
+    const whatsappScheme = `whatsapp://send?phone=${waNumber}&text=${encoded}`; // direct app scheme
+    const apiLink = `https://api.whatsapp.com/send?phone=${waNumber}&text=${encoded}`; // web fallback
+    const waMeLink = `https://wa.me/${waNumber}?text=${encoded}`; // alternate fallback
+
+    function openUrl(url){
+      try {
+        if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          // mobile: change location (works better for custom schemes)
+          window.location.href = url;
+        } else {
+          // desktop: open new tab
+          window.open(url, '_blank');
+        }
+      } catch(err){
+        window.open(url, '_blank');
+      }
+    }
+
+    // Try in order: whatsapp:// (mobile), then apiLink, then wa.me
+    if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      openUrl(whatsappScheme);
+      // fallback attempts after short delays (some browsers block custom schemes)
+      setTimeout(()=>openUrl(apiLink), 1200);
+      setTimeout(()=>openUrl(waMeLink), 2400);
+    } else {
+      openUrl(apiLink);
+      setTimeout(()=>openUrl(waMeLink), 1000);
+    }
+
+    // show success modal
+    if (successModal) { successModal.classList.add('show'); successModal.setAttribute('aria-hidden','false'); }
+
+    // Extra fallback: after 4s, if still on page, offer to copy message
+    setTimeout(() => {
+      if (document.visibilityState === 'visible') {
+        if (!sessionStorage.getItem('gw_copy_shown')) {
+          sessionStorage.setItem('gw_copy_shown','1');
+          if (confirm('If WhatsApp did not open, press OK to copy the order message to clipboard so you can paste it into WhatsApp manually.')) {
+            try {
+              navigator.clipboard.writeText(message).then(()=>{
+                alert('Message copied to clipboard. Open WhatsApp and paste to send.');
+              }, ()=> {
+                prompt('Copy the order message below (Ctrl+C / long-press):', message);
+              });
+            } catch(e){
+              prompt('Copy the order message below (Ctrl+C / long-press):', message);
+            }
+          }
+        }
+      }
+    }, 4000);
+
+  }); // end orderForm submit
+
+  /* ----------------------- preview, save, modal behaviors ----------------------- */
   if (previewBtn) previewBtn.addEventListener('click', () => {
     const t = calcTotals();
     const name = (document.getElementById('name') && document.getElementById('name').value) || '-';
@@ -340,57 +465,9 @@ function ensureShippingPanel(){
   if (confirmOrder) confirmOrder.addEventListener('click', () => { if (paymentArea) paymentArea.style.display = 'block'; });
   if (closeModal) closeModal.addEventListener('click', () => { if (orderModal) { orderModal.classList.remove('show'); orderModal.setAttribute('aria-hidden','true'); } });
 
-  if (orderForm) orderForm.addEventListener('submit', function(e){
-    e.preventDefault();
-    const nameVal = (document.getElementById('name') && document.getElementById('name').value.trim()) || '';
-    const phoneVal = (document.getElementById('phone') && document.getElementById('phone').value.trim()) || '';
-    if (!nameVal || !phoneVal){ alert('Please enter name and phone.'); return; }
-    const t = calcTotals();
-    const order = {
-      name: nameVal,
-      phone: phoneVal,
-      email: (document.getElementById('email') && document.getElementById('email').value.trim()) || '',
-      product: productSelect.value,
-      priceEach: t.price,
-      qty: t.qty,
-      shippingCountry: countrySelect.value,
-      shippingCost: t.shipCost,
-      total: t.grand,
-      note: (document.getElementById('note') && document.getElementById('note').value.trim()) || '',
-      eta: t.eta,
-      timestamp: new Date().toISOString()
-    };
-    try { const all = JSON.parse(localStorage.getItem('greenwrite_orders') || '[]'); all.unshift(order); localStorage.setItem('greenwrite_orders', JSON.stringify(all)); } catch(e){}
-
-    // --- Build nice WhatsApp message (multi-line) ---
-    const countryNames = { IN: 'India', US: 'United States', UK: 'United Kingdom', AU: 'Australia', OTHER: 'Other' };
-    const countryLabel = countryNames[(order.shippingCountry || 'IN').toUpperCase()] || order.shippingCountry || '—';
-    const itemsLine = `${order.product} x${order.qty} — ₹${order.priceEach} each (₹${order.priceEach * order.qty})`;
-
-    const messageLines = [
-      "🌱 GreenWrite — Order",
-      `Name: ${order.name}`,
-      `Phone: ${order.phone}`,
-      `Email: ${order.email || '-'}`,
-      `Product: ${itemsLine}`,
-      `Shipping: ${countryLabel} (${(order.shippingCountry || '').toUpperCase()}) — ₹${order.shippingCost}`,
-      `ETA: ${order.eta}`,
-      `Total: ₹${order.total}`,
-      `Note: ${order.note || '-'}`,
-      "",
-      "Ordered via: Website created by Bharat — Team GreenWrite"
-    ];
-    const message = messageLines.join("\n");
-    const encoded = encodeURIComponent(message);
-
-    const waNo = '584161689126';
-    window.open(`https://wa.me/${waNo}?text=${encoded}`, '_blank');
-
-    if (successModal) { successModal.classList.add('show'); successModal.setAttribute('aria-hidden','false'); }
-  });
-
   if (closeSuccess) closeSuccess.addEventListener('click', () => { if (successModal) { successModal.classList.remove('show'); successModal.setAttribute('aria-hidden','true'); } });
 
+  // load draft if exists
   (function loadDraft(){
     try {
       const d = JSON.parse(localStorage.getItem('greenwrite_draft') || 'null');
@@ -406,8 +483,9 @@ function ensureShippingPanel(){
     } catch(e){}
   })();
 
+  // helper
   function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[s])); }
-})();
+})(); // end orderSystem
 
 /* ================= BUY NOW buttons prefill ================= */
 (function bindBuyNow(){
