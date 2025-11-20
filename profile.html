@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Profile — GreenWrite</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <!-- Simple header (you can copy your main header if you want same look) -->
+  <header class="site-header">
+    <div class="header-inner container">
+      <div class="brand">
+        <img src="logo.png" alt="GreenWrite logo" class="brand-logo" />
+        <div>
+          <h1 class="site-title">GreenWrite</h1>
+          <div class="tagline">Your Profile</div>
+        </div>
+      </div>
+
+      <nav class="main-nav">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card fade-in" style="max-width:520px;margin:26px auto">
+      <h2 style="margin-top:0">Profile</h2>
+      <p id="statusText" class="small" style="margin-top:4px;color:var(--muted)">
+        Checking login status…
+      </p>
+
+      <div style="display:flex;align-items:center;gap:14px;margin-top:14px">
+        <div id="profilePhotoWrap"
+             style="width:72px;height:72px;border-radius:50%;overflow:hidden;background:#e0f2e0;display:flex;align-items:center;justify-content:center;font-size:32px;">
+          <span id="profileInitial">?</span>
+          <img id="profilePhoto" src="" alt="Profile photo"
+               style="display:none;width:100%;height:100%;object-fit:cover" />
+        </div>
+
+        <div>
+          <div><strong>Name:</strong> <span id="profileName">—</span></div>
+          <div><strong>Email:</strong> <span id="profileEmail">—</span></div>
+          <div><strong>Phone:</strong> <span id="profilePhone">—</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;padding:10px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.6)">
+        <p class="small" style="margin:0">
+          You have been logged in ✅<br/>
+          Use this page to confirm your details or log out from GreenWrite.
+        </p>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap">
+        <button id="backHome" class="btn secondary" type="button">← Back to Home</button>
+        <div style="flex:1"></div>
+        <button id="logoutBtn" class="btn" type="button">Log out</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Firebase + profile logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    // Your Firebase config (same as index.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBok3WdamaRJaVCzznMwB-lwHVWoHAM2i4",
+      authDomain: "greenwrite-704d9.firebaseapp.com",
+      projectId: "greenwrite-704d9",
+      storageBucket: "greenwrite-704d9.firebasestorage.app",
+      messagingSenderId: "815467329176",
+      appId: "1:815467329176:web:d7d767409867d2c2eb82ed",
+      measurementId: "G-2192KW3Y9J"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const statusText = document.getElementById("statusText");
+    const nameEl = document.getElementById("profileName");
+    const emailEl = document.getElementById("profileEmail");
+    const phoneEl = document.getElementById("profilePhone");
+    const photo = document.getElementById("profilePhoto");
+    const photoWrap = document.getElementById("profilePhotoWrap");
+    const initialEl = document.getElementById("profileInitial");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const backHome = document.getElementById("backHome");
+
+    // If user is not logged in, send them back to home
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        statusText.textContent = "You are not logged in. Redirecting to home…";
+        setTimeout(() => { window.location.href = "index.html"; }, 1600);
+        return;
+      }
+
+      // Logged in ✅
+      statusText.textContent = "You have been logged in ✅";
+
+      const displayName = user.displayName || "GreenWrite User";
+      const email = user.email || "-";
+      const phoneFromFirebase = user.phoneNumber || "";
+      const phoneFromLocal = localStorage.getItem("gw_profile_phone") || "";
+      const finalPhone = phoneFromFirebase || phoneFromLocal || "-";
+
+      nameEl.textContent = displayName;
+      emailEl.textContent = email;
+      phoneEl.textContent = finalPhone;
+
+      // Show avatar / initial
+      if (user.photoURL) {
+        photo.src = user.photoURL;
+        photo.style.display = "block";
+        initialEl.style.display = "none";
+      } else {
+        photo.style.display = "none";
+        const firstLetter = displayName.trim().charAt(0).toUpperCase() || "G";
+        initialEl.textContent = firstLetter;
+        initialEl.style.display = "block";
+      }
+    });
+
+    // Logout button
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        localStorage.removeItem("gw_profile_phone");
+        alert("You have been logged out.");
+        window.location.href = "index.html";
+      } catch (err) {
+        console.error(err);
+        alert("Could not log out, please try again.");
+      }
+    });
+
+    backHome.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
