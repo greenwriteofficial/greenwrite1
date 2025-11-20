@@ -34,7 +34,11 @@
 
       <div class="tools">
         <!-- profile icon -->
-        <button id="profileBtn" class="icon-btn" aria-label="Profile / Login">👤</button>
+        <button id="profileBtn" class="icon-btn profile-btn" aria-label="Profile / Login">
+  <span id="profileAvatar" class="avatar-circle">👤</span>
+  <span id="profileName" class="profile-name">Log in</span>
+</button>
+
 
         <!-- cart icon -->
         <button id="cartBtn" class="icon-btn" aria-label="View cart">
@@ -365,6 +369,10 @@
 
   <!-- extra floating WhatsApp (mobile) -->
   <a id="waFloatBottom" class="whats-float" href="https://wa.me/584161689126" target="_blank" aria-label="WhatsApp">💬</a>
+
+  <!-- Firebase (compat SDKs) -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
   <!-- scripts -->
   <script src="assets/js/script.js"></script>
