@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Profile — GreenWrite</title>
-  <meta name="description" content="GreenWrite profile — login or sign up with Google or email & password." />
+  <meta name="description" content="GreenWrite profile — login or sign up with Google or email and password." />
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
@@ -66,11 +66,12 @@
           <h2 class="headline">Profile & Login</h2>
           <p class="hero-lead">
             Create a simple profile to save your details for GreenWrite orders.
-            You can log in with Google or your email & password.
+            You can log in with Google or with email and password.
           </p>
           <ul class="small">
             <li>Made only for school project demo (no real payments).</li>
-            <li>You can always log out from this page.</li>
+            <li>Your profile is stored in Firebase Auth.</li>
+            <li>We also keep a copy of your name & email in this browser for auto-fill.</li>
           </ul>
         </div>
 
@@ -87,8 +88,8 @@
       <div class="card">
         <h3>Why login?</h3>
         <ul>
-          <li>Auto-fill name and phone in the order form.</li>
-          <li>See a history of your last orders (stored in your browser only).</li>
+          <li>Auto-fill name and email in the order form.</li>
+          <li>Keep a history of orders in this browser only (localStorage).</li>
           <li>Completely optional — you can still order as a guest.</li>
         </ul>
       </div>
@@ -105,7 +106,7 @@
 
   <!-- Main shared JS (header, dark mode, etc.) -->
   <script src="assets/js/script.js"></script>
-  <!-- Profile / Firebase auth (module) -->
+  <!-- Profile / Firebase auth (module, Google + email/password only) -->
   <script type="module" src="assets/js/profile.js"></script>
 </body>
 </html>
