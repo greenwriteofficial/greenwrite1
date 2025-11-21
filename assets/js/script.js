@@ -5,7 +5,7 @@
    - Shipping calculator (India base = ₹40, free > ₹500, bulk free)
    - Order form -> WhatsApp (mobile safe)
    - Cart system with animation
-   - REAL Firebase Auth (Google + email/password via prompts)
+   - REAL Firebase Auth (Google + email/password)
    - Shows logged-in user’s name in header profile button
 */
 
@@ -339,13 +339,13 @@ function ensureShippingPanel(){
     grandTotalEl.textContent = `₹${itemTot + shipCost}`;
 
     const panel = ensureShippingPanel();
+    const etaText = estimateETA(countryCode, totalKg);
     if (panel){
       const estWeight = panel.querySelector('#estWeight');
       const eta       = panel.querySelector('#shipETA');
       const tier      = panel.querySelector('#shipTier');
 
       if (estWeight) estWeight.textContent = `${totalKg.toFixed(2)} kg`;
-      const etaText = estimateETA(countryCode, totalKg);
       if (eta) eta.textContent = etaText;
 
       let tierText = 'Standard';
@@ -354,10 +354,9 @@ function ensureShippingPanel(){
       }
       if (shipCost === 0) tierText = 'Free shipping';
       if (tier) tier.textContent = tierText;
-
-      return { price, qty, itemTotal:itemTot, totalWeightKg:totalKg, shipCost, grand:itemTot+shipCost, eta:etaText };
     }
-    return { price, qty, itemTotal:itemTot, totalWeightKg:totalKg, shipCost, grand:itemTot+shipCost, eta:estimateETA(countryCode, totalKg) };
+
+    return { price, qty, itemTotal:itemTot, totalWeightKg:totalKg, shipCost, grand:itemTot+shipCost, eta:etaText };
   }
 
   productSelect.addEventListener('change', calcTotals);
@@ -504,7 +503,10 @@ function ensureShippingPanel(){
       setTimeout(()=>openUrl(waMeLink), 1000);
     }
 
-    successModal && successModal.classList.add('show') && successModal.setAttribute('aria-hidden','false');
+    if (successModal){
+      successModal.classList.add('show');
+      successModal.setAttribute('aria-hidden','false');
+    }
 
     setTimeout(()=>{
       if (document.visibilityState === 'visible' && !sessionStorage.getItem('gw_copy_shown')){
@@ -675,8 +677,8 @@ function ensureShippingPanel(){
   });
 })();
 
-/* ========== REAL FIREBASE AUTH (GOOGLE + EMAIL/PASSWORD) ========== */
-/* Uses Firebase compat SDK loaded in index.html */
+/* ========== REAL FIREBASE AUTH (GOOGLE + EMAIL/PASSWORD ONLY) ========== */
+/* Uses Firebase compat SDK loaded in index.html / products.html */
 
 (function authModalInit(){
   const modal      = $('#authModal');
@@ -684,11 +686,10 @@ function ensureShippingPanel(){
 
   if (!modal) return;
   if (typeof firebase === 'undefined'){
-    console.warn('Firebase SDK not loaded. Check script tags in index.html');
+    console.warn('Firebase SDK not loaded. Check script tags in HTML.');
     return;
   }
 
-  // Your config
   const firebaseConfig = {
     apiKey: "AIzaSyBok3WdamaRJaVCzznMwB-lwHVWoHAM2i4",
     authDomain: "greenwrite-704d9.firebaseapp.com",
@@ -700,22 +701,20 @@ function ensureShippingPanel(){
   };
 
   // Init only once
-  let app;
-  try {
-    app = firebase.app();
-  } catch(e){
-    app = firebase.initializeApp(firebaseConfig);
-  }
+  try { firebase.app(); }
+  catch(e){ firebase.initializeApp(firebaseConfig); }
+
   const auth     = firebase.auth();
   const provider = new firebase.auth.GoogleAuthProvider();
 
   const SKIP_KEY   = 'gw_seen_auth_v1';
   const authClose  = $('#authClose');
   const authSkip   = $('#authSkip');
-  const authSave   = $('#authSave');
   const authGoogle = $('#authGoogle');
-  const authPhoneBtn   = $('#authPhone');      // we’ll reuse for Email login/signup via prompts
-  const authPhoneInput = $('#authPhoneInput'); // still just stored as profile detail
+  const authEmail  = $('#authEmail');
+  const authStatus = $('#authStatus');
+  const logoutBtn  = $('#logoutBtn');
+  const loginBtns  = $('#authLoginButtons');
 
   function openModal(){
     modal.classList.add('show');
@@ -729,15 +728,37 @@ function ensureShippingPanel(){
 
   // Show logged-in user in header profile button
   function renderUser(user){
-    if (!profileBtn) return;
-    if (user){
-      const name = user.displayName || user.email || 'User';
-      const first = name.split(' ')[0];
-      profileBtn.textContent = first;
-      profileBtn.title = name;
-    } else {
-      profileBtn.textContent = '👤';
-      profileBtn.title = 'Login / Profile';
+    if (profileBtn){
+      if (user){
+        const name = user.displayName || user.email || 'User';
+        const first = name.split(' ')[0];
+        profileBtn.innerHTML = `
+          <span class="avatar-circle">${first[0].toUpperCase()}</span>
+          <span class="profile-name">${first}</span>
+        `;
+        profileBtn.classList.add('profile-btn');
+        profileBtn.title = name;
+      } else {
+        profileBtn.textContent = '👤';
+        profileBtn.classList.remove('profile-btn');
+        profileBtn.title = 'Login / Profile';
+      }
+    }
+
+    if (authStatus){
+      if (user){
+        const name = user.displayName || user.email || 'GreenWrite user';
+        authStatus.textContent = `Logged in as ${name}. We will use this to fill the order form in this browser.`;
+      } else {
+        authStatus.textContent = 'Login with Google or Email & Password. You can also close and continue as guest.';
+      }
+    }
+
+    if (loginBtns){
+      loginBtns.style.display = user ? 'none' : 'flex';
+    }
+    if (logoutBtn){
+      logoutBtn.style.display = user ? 'inline-block' : 'none';
     }
   }
 
@@ -745,7 +766,7 @@ function ensureShippingPanel(){
     renderUser(user);
   });
 
-  // First visit: show login popup after 1s
+  // First visit: show login popup after 1s (only once)
   try {
     if (localStorage.getItem(SKIP_KEY) !== '1'){
       setTimeout(openModal, 1000);
@@ -753,8 +774,8 @@ function ensureShippingPanel(){
   } catch(e){}
 
   profileBtn && profileBtn.addEventListener('click', openModal);
-  authClose && authClose.addEventListener('click', closeModal);
-  authSkip  && authSkip.addEventListener('click', closeModal);
+  authClose  && authClose.addEventListener('click', closeModal);
+  authSkip   && authSkip.addEventListener('click', closeModal);
   modal.addEventListener('click', e=>{ if (e.target === modal) closeModal(); });
 
   // Google sign-in
@@ -769,65 +790,42 @@ function ensureShippingPanel(){
     }
   });
 
-  // Email/password login + signup using prompts (no extra HTML needed)
-  if (authPhoneBtn){
-    authPhoneBtn.textContent = 'Login / Signup with Email';
-    authPhoneBtn.addEventListener('click', async ()=>{
-      const email = prompt('Enter email:');
-      if (!email) return;
-      const pass  = prompt('Enter password (min 6 characters):');
-      if (!pass) return;
+  // Email/password login + signup using prompts
+  authEmail && authEmail.addEventListener('click', async ()=>{
+    const email = prompt('Enter email:');
+    if (!email) return;
+    const pass  = prompt('Enter password (min 6 characters):');
+    if (!pass) return;
 
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        alert('Logged in successfully!');
-        closeModal();
-      } catch(err){
-        if (err.code === 'auth/user-not-found'){
-          if (confirm('No account found with this email. Create a new account?')){
-            try {
-              const cred = await auth.createUserWithEmailAndPassword(email, pass);
-              const displayName = prompt('Enter your name (optional):');
-              if (displayName){
-                await cred.user.updateProfile({ displayName });
-              }
-              alert('Account created & logged in!');
-              closeModal();
-            } catch(e2){
-              console.error(e2);
-              alert(e2.message || 'Could not create account.');
+    try {
+      await auth.signInWithEmailAndPassword(email, pass);
+      alert('Logged in successfully!');
+      closeModal();
+    } catch(err){
+      if (err.code === 'auth/user-not-found'){
+        if (confirm('No account found with this email. Create a new account?')){
+          try {
+            const cred = await auth.createUserWithEmailAndPassword(email, pass);
+            const displayName = prompt('Enter your name (optional):');
+            if (displayName){
+              await cred.user.updateProfile({ displayName });
             }
+            alert('Account created & logged in!');
+            closeModal();
+          } catch(e2){
+            console.error(e2);
+            alert(e2.message || 'Could not create account.');
           }
-        } else {
-          console.error(err);
-          alert(err.message || 'Login failed.');
         }
+      } else {
+        console.error(err);
+        alert(err.message || 'Login failed.');
       }
-    });
-  }
-
-  // Save phone to local profile (demo, not auth)
-  authSave && authSave.addEventListener('click', ()=>{
-    const phone = authPhoneInput && authPhoneInput.value.trim();
-    if (phone){
-      try { localStorage.setItem('gw_profile_phone', phone); } catch(e){}
-      alert('Phone saved to profile (demo).');
     }
-    closeModal();
   });
 
-  // Add a small logout button dynamically
-  let logoutBtn = $('#authLogout');
-  if (!logoutBtn){
-    logoutBtn = document.createElement('button');
-    logoutBtn.id = 'authLogout';
-    logoutBtn.textContent = 'Log out';
-    logoutBtn.className = 'btn secondary';
-    logoutBtn.style.marginTop = '10px';
-    const card = modal.querySelector('.auth-card') || modal.querySelector('.modal-card');
-    card && card.appendChild(logoutBtn);
-  }
-  logoutBtn.addEventListener('click', async ()=>{
+  // Logout
+  logoutBtn && logoutBtn.addEventListener('click', async ()=>{
     try {
       await auth.signOut();
       alert('Logged out.');
