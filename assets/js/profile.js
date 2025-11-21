@@ -1,21 +1,27 @@
 /* assets/js/profile.js
-   Firebase-powered Profile Page (Google + Phone OTP)
-   - Safe: ONLY touches #profileRoot
-   - If #profileRoot is missing (e.g. on index.html), this file does nothing
+   Firebase Auth (Google + Phone) ONLY for profile.html
+   - Does nothing on other pages (so home layout is safe)
 */
 
+const isProfilePage = window.location.pathname.endsWith("profile.html");
+if (!isProfilePage) {
+  // Don't touch DOM on other pages
+  console.log("profile.js: not profile.html, skipping auth UI");
+}
+
+/* ---------- Firebase imports (CDN, works on GitHub Pages) ---------- */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  signOut,
   RecaptchaVerifier,
   signInWithPhoneNumber,
   onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-/* ----------------- Firebase config (your project) ----------------- */
+/* ---------- Your Firebase config ---------- */
 const firebaseConfig = {
   apiKey: "AIzaSyBok3WdamaRJaVCzznMwB-lwHVWoHAM2i4",
   authDomain: "greenwrite-704d9.firebaseapp.com",
@@ -23,249 +29,192 @@ const firebaseConfig = {
   storageBucket: "greenwrite-704d9.firebasestorage.app",
   messagingSenderId: "815467329176",
   appId: "1:815467329176:web:d7d767409867d2c2eb82ed",
-  measurementId: "G-2192KW3Y9J",
+  measurementId: "G-2192KW3Y9J"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 auth.languageCode = "en";
 
-const provider = new GoogleAuthProvider();
-let recaptchaVerifier = null;
-
-/* ----------------- Helpers ----------------- */
-
-function $(sel) {
-  return document.querySelector(sel);
+/* ---------- Only build UI on profile.html ---------- */
+if (!isProfilePage) {
+  // We still initialized Firebase (safe), but do not render anything.
+  return;
 }
 
-function createLayout(root) {
+const $ = (sel) => document.querySelector(sel);
+
+/* Build the profile card UI */
+function renderLoggedOut() {
+  const root = $("#profileRoot");
+  if (!root) return;
   root.innerHTML = `
-    <section class="card fade-in" style="max-width:640px;margin:18px auto;">
-      <h2 style="margin-top:0">Profile & Login</h2>
-      <p class="small" style="margin-bottom:10px">
-        Sign in to save your details for future orders. This is just for the school project demo.
-      </p>
+    <h3 style="margin-top:0">Login or Sign up</h3>
+    <p class="small" style="color:var(--muted)">Use Google or your phone number to create a simple profile. This is only for demo and order auto-fill.</p>
 
-      <!-- Logged-out view -->
-      <div id="authLoggedOut">
-        <h3 style="margin:8px 0;">Sign in</h3>
-        <button id="googleLogin" class="btn" type="button" style="width:100%;margin-bottom:10px;">
-          Continue with Google
-        </button>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+      <button id="btnGoogle" class="btn" type="button">Continue with Google</button>
 
-        <div style="margin:10px 0;text-align:center;color:var(--muted);font-size:0.85rem;">
-          — or sign in with phone —
-        </div>
+      <div class="card" style="margin-top:6px;padding:10px;border-radius:10px">
+        <label class="small" for="phoneInput">Login with phone (with country code)</label>
+        <input id="phoneInput" type="tel" placeholder="+91 98765 43210" style="width:100%;padding:8px;margin-top:4px;border-radius:8px;border:1px solid #dcdcdc" />
+        <button id="btnSendOtp" class="btn secondary" type="button" style="margin-top:6px">Send OTP</button>
 
-        <label class="small" for="phoneInput">Phone (with country code)</label>
-        <input id="phoneInput" type="tel" placeholder="+91 98765 43210" style="width:100%;padding:8px;border-radius:8px;border:1px solid #dcdcdc;margin-bottom:6px;">
-
-        <div id="recaptcha-container" style="margin:6px 0;"></div>
-
-        <button id="phoneSendOtp" class="btn secondary" type="button" style="width:100%;margin-top:4px;">
-          Send OTP
-        </button>
-
-        <div id="otpBox" style="display:none;margin-top:10px;">
+        <div id="otpArea" style="display:none;margin-top:8px">
           <label class="small" for="otpInput">Enter OTP</label>
-          <input id="otpInput" type="text" placeholder="6 digit code" style="width:100%;padding:8px;border-radius:8px;border:1px solid #dcdcdc;margin-bottom:6px;">
-          <button id="otpVerify" class="btn" type="button" style="width:100%;">Verify & Login</button>
+          <input id="otpInput" type="text" placeholder="123456" style="width:100%;padding:8px;margin-top:4px;border-radius:8px;border:1px solid #dcdcdc" />
+          <button id="btnVerifyOtp" class="btn" type="button" style="margin-top:6px">Verify & Login</button>
         </div>
-
-        <p id="authError" class="small" style="margin-top:8px;color:#b00020;display:none;"></p>
+        <div id="phoneMsg" class="small" style="margin-top:6px;color:var(--muted)"></div>
       </div>
+    </div>
 
-      <!-- Logged-in view -->
-      <div id="authLoggedIn" style="display:none;">
-        <div style="display:flex;align-items:center;gap:12px;margin:10px 0;">
-          <div id="userAvatar" style="width:56px;height:56px;border-radius:50%;background:#e4f4e5;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;">
-            U
-          </div>
-          <div>
-            <div id="userName" style="font-weight:700;">User</div>
-            <div id="userEmail" class="small"></div>
-            <div id="userPhone" class="small"></div>
-          </div>
-        </div>
-
-        <p class="small" style="margin:8px 0;color:var(--muted);">
-          You are signed in. We can pre-fill your name and phone in the order form on the main website.
-        </p>
-
-        <button id="signOutBtn" class="btn secondary" type="button" style="width:100%;margin-top:6px;">
-          Sign out
-        </button>
-      </div>
-    </section>
+    <div id="recaptcha-container" style="margin-top:10px"></div>
   `;
+
+  attachLoggedOutHandlers();
 }
 
-function showError(msg) {
-  const el = $("#authError");
-  if (!el) return;
-  el.textContent = msg;
-  el.style.display = msg ? "block" : "none";
-}
+function renderLoggedIn(user) {
+  const root = $("#profileRoot");
+  if (!root) return;
+  const name = user.displayName || "GreenWrite user";
+  const phone = user.phoneNumber || "Not set";
+  const email = user.email || "Not set";
 
-function updateLoggedInUI(user) {
-  const outBox = $("#authLoggedOut");
-  const inBox = $("#authLoggedIn");
-  if (!outBox || !inBox) return;
+  root.innerHTML = `
+    <h3 style="margin-top:0">Welcome, ${escapeHtml(name)}</h3>
+    <p class="small" style="color:var(--muted)">You are logged in. We will use this info to auto-fill the order form on the website (in this browser only).</p>
 
-  if (!user) {
-    // logged out
-    outBox.style.display = "block";
-    inBox.style.display = "none";
-    showError("");
-    return;
+    <div class="card" style="margin-top:10px;padding:10px;border-radius:10px">
+      <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+      <p><strong>Phone:</strong> ${escapeHtml(phone)}</p>
+    </div>
+
+    <p class="small" style="margin-top:8px">Tip: Go to the home page order form. Your name, phone and email can be auto-filled using this profile.</p>
+
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button id="btnFillOrder" class="btn secondary" type="button">Open Order Form</button>
+      <button id="btnLogout" class="btn" type="button">Log out</button>
+    </div>
+  `;
+
+  // store minimal profile in localStorage (for order form auto-fill)
+  try {
+    const mini = {
+      name,
+      email: user.email || "",
+      phone: user.phoneNumber || ""
+    };
+    localStorage.setItem("greenwrite_profile", JSON.stringify(mini));
+  } catch (e) {
+    console.warn("Could not save profile locally", e);
   }
 
-  outBox.style.display = "none";
-  inBox.style.display = "block";
+  const btnLogout = $("#btnLogout");
+  const btnFillOrder = $("#btnFillOrder");
 
-  const nameEl = $("#userName");
-  const emailEl = $("#userEmail");
-  const phoneEl = $("#userPhone");
-  const avatarEl = $("#userAvatar");
-
-  const displayName = user.displayName || "GreenWrite user";
-  const email = user.email || "";
-  const phone = user.phoneNumber || "";
-
-  if (nameEl) nameEl.textContent = displayName;
-  if (emailEl) emailEl.textContent = email;
-  if (phoneEl) phoneEl.textContent = phone ? `Phone: ${phone}` : "";
-
-  if (avatarEl) {
-    if (user.photoURL) {
-      avatarEl.style.backgroundImage = `url(${user.photoURL})`;
-      avatarEl.style.backgroundSize = "cover";
-      avatarEl.style.backgroundPosition = "center";
-      avatarEl.textContent = "";
-    } else {
-      avatarEl.style.backgroundImage = "none";
-      avatarEl.textContent = displayName.charAt(0).toUpperCase();
-    }
-  }
+  btnLogout && btnLogout.addEventListener("click", () => signOut(auth).catch(console.error));
+  btnFillOrder &&
+    btnFillOrder.addEventListener("click", () => {
+      window.location.href = "index.html#order";
+    });
 }
 
-/* ----------------- Recaptcha + Phone Auth ----------------- */
+/* Escape helper */
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (s) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[s]));
+}
 
-function ensureRecaptcha() {
+/* ---------- Google & Phone handlers ---------- */
+let recaptchaVerifier = null;
+let confirmationResult = null;
+
+function setupRecaptcha() {
   if (recaptchaVerifier) return recaptchaVerifier;
   recaptchaVerifier = new RecaptchaVerifier(
     auth,
     "recaptcha-container",
     {
-      size: "normal",
+      size: "invisible",
       callback: () => {
-        // verified
-      },
+        console.log("reCAPTCHA solved");
+      }
     }
   );
   return recaptchaVerifier;
 }
 
-async function handlePhoneSendOtp() {
-  showError("");
+function attachLoggedOutHandlers() {
+  const btnGoogle = $("#btnGoogle");
+  const btnSendOtp = $("#btnSendOtp");
+  const btnVerifyOtp = $("#btnVerifyOtp");
   const phoneInput = $("#phoneInput");
-  if (!phoneInput) return;
-  const phone = phoneInput.value.trim();
-  if (!phone) {
-    showError("Please enter a phone number with country code.");
-    return;
-  }
-
-  try {
-    const verifier = ensureRecaptcha();
-    const result = await signInWithPhoneNumber(auth, phone, verifier);
-    window._gw_otp_confirmation = result;
-    const otpBox = $("#otpBox");
-    if (otpBox) otpBox.style.display = "block";
-  } catch (err) {
-    console.error(err);
-    if (err.code === "auth/billing-not-enabled") {
-      showError("Phone auth is not fully enabled in Firebase project (billing issue). Ask your teacher to enable it.");
-    } else {
-      showError(err.message || "Failed to send OTP.");
-    }
-  }
-}
-
-async function handleOtpVerify() {
+  const otpArea = $("#otpArea");
   const otpInput = $("#otpInput");
-  if (!otpInput) return;
-  const code = otpInput.value.trim();
-  if (!code) {
-    showError("Enter the OTP code.");
-    return;
+  const phoneMsg = $("#phoneMsg");
+
+  if (btnGoogle) {
+    btnGoogle.addEventListener("click", async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        console.error(err);
+        alert("Google login failed. (Check console for details.)");
+      }
+    });
   }
-  const confirmation = window._gw_otp_confirmation;
-  if (!confirmation) {
-    showError("Please request an OTP first.");
-    return;
+
+  if (btnSendOtp && phoneInput) {
+    btnSendOtp.addEventListener("click", async () => {
+      const phone = phoneInput.value.trim();
+      if (!phone) {
+        phoneMsg.textContent = "Enter phone number with country code (e.g., +91...).";
+        return;
+      }
+      phoneMsg.textContent = "Sending OTP...";
+      try {
+        const verifier = setupRecaptcha();
+        confirmationResult = await signInWithPhoneNumber(auth, phone, verifier);
+        otpArea.style.display = "block";
+        phoneMsg.textContent = "OTP sent. Please check your phone.";
+      } catch (err) {
+        console.error(err);
+        phoneMsg.textContent = "Failed to send OTP. Check number and try again.";
+      }
+    });
   }
-  try {
-    const result = await confirmation.confirm(code);
-    updateLoggedInUI(result.user);
-    showError("");
-  } catch (err) {
-    console.error(err);
-    showError("Invalid or expired OTP.");
+
+  if (btnVerifyOtp && otpInput) {
+    btnVerifyOtp.addEventListener("click", async () => {
+      const code = otpInput.value.trim();
+      if (!code || !confirmationResult) return;
+      try {
+        phoneMsg.textContent = "Verifying...";
+        await confirmationResult.confirm(code);
+        phoneMsg.textContent = "Phone verified!";
+      } catch (err) {
+        console.error(err);
+        phoneMsg.textContent = "Invalid OTP. Please try again.";
+      }
+    });
   }
 }
 
-/* ----------------- Google Auth ----------------- */
-
-async function handleGoogleLogin() {
-  showError("");
-  try {
-    const result = await signInWithPopup(auth, provider);
-    updateLoggedInUI(result.user);
-  } catch (err) {
-    console.error(err);
-    if (err.code === "auth/popup-blocked") {
-      showError("Popup blocked. Please allow popups and try again.");
-    } else {
-      showError(err.message || "Google login failed.");
-    }
+/* ---------- Auth state listener ---------- */
+onAuthStateChanged(auth, (user) => {
+  if (!isProfilePage) return;
+  if (user) {
+    renderLoggedIn(user);
+  } else {
+    renderLoggedOut();
   }
-}
-
-/* ----------------- Sign out ----------------- */
-
-async function handleSignOut() {
-  try {
-    await signOut(auth);
-    updateLoggedInUI(null);
-  } catch (err) {
-    console.error(err);
-    showError("Error signing out.");
-  }
-}
-
-/* ----------------- Init on profile page only ----------------- */
-
-document.addEventListener("DOMContentLoaded", () => {
-  const root = document.getElementById("profileRoot");
-  // If there's no profileRoot, do nothing (so other pages are safe)
-  if (!root) return;
-
-  createLayout(root);
-
-  const gBtn = $("#googleLogin");
-  const phoneBtn = $("#phoneSendOtp");
-  const otpBtn = $("#otpVerify");
-  const signOutBtn = $("#signOutBtn");
-
-  gBtn && gBtn.addEventListener("click", handleGoogleLogin);
-  phoneBtn && phoneBtn.addEventListener("click", handlePhoneSendOtp);
-  otpBtn && otpBtn.addEventListener("click", handleOtpVerify);
-  signOutBtn && signOutBtn.addEventListener("click", handleSignOut);
-
-  // Restore session if any
-  onAuthStateChanged(auth, (user) => {
-    updateLoggedInUI(user || null);
-  });
 });
