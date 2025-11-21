@@ -4,12 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Profile — GreenWrite</title>
-  <meta name="description" content="GreenWrite profile — Login and manage your account." />
-  <meta name="theme-color" content="#2e7d32" />
+  <meta name="description" content="GreenWrite profile — login or sign up with Google or phone." />
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
-  <!-- Header (same style as index) -->
+  <!-- Header (same style as home) -->
   <header class="site-header">
     <div class="header-inner container">
       <div class="brand">
@@ -20,7 +19,7 @@
         <img src="logo.png" alt="GreenWrite logo" class="brand-logo" />
         <div>
           <h1 class="site-title">GreenWrite</h1>
-          <div class="tagline">Plantable Pens & Pencils — <span id="typedTextSmall">Write your future.</span><span class="typed-cursor"></span></div>
+          <div class="tagline">Plantable Pens & Pencils — Write your future.</div>
         </div>
       </div>
 
@@ -34,11 +33,6 @@
       </nav>
 
       <div class="tools">
-        <!-- you can hide profile icon here if you want, but it's okay to keep -->
-        <button id="profileBtn" class="icon-btn" aria-label="Profile">👤</button>
-        <button id="cartBtn" class="icon-btn" aria-label="View cart">
-          🛒 <span id="cartCount" class="cart-count">0</span>
-        </button>
         <button id="darkToggle" class="icon-btn" aria-label="Toggle dark mode">🌓</button>
         <a id="waFloat" class="whats-float desktop-only" href="https://wa.me/584161689126" target="_blank" aria-label="WhatsApp">💬</a>
       </div>
@@ -63,72 +57,52 @@
     </div>
   </header>
 
-  <!-- Main content -->
+  <!-- MAIN -->
   <main class="container">
-    <section class="card fade-in" style="max-width:640px;margin:24px auto">
-      <h2>Profile / Login</h2>
-      <p class="small" style="margin-top:6px">
-        Sign in with Google or your phone number.
-      </p>
-
-      <!-- Status text -->
-      <p id="authStatus" class="small" style="margin-top:8px;color:var(--muted)">
-        Not logged in.
-      </p>
-
-      <!-- Login / signup box -->
-      <div id="loginBox" style="margin-top:12px;display:flex;flex-direction:column;gap:12px">
-        <button id="googleBtn" class="btn" type="button">Continue with Google</button>
-
-        <div style="border-top:1px solid rgba(0,0,0,0.06);margin:8px 0"></div>
-
-        <div>
-          <label class="small" for="phoneInput">Phone number (with country code, e.g. +91…)</label>
-          <input id="phoneInput" type="tel" placeholder="+91 XXXXXXXXX" style="width:100%;padding:10px;margin-top:4px;border-radius:8px;border:1px solid #dcdcdc" />
-          <button id="sendOtpBtn" class="btn secondary" type="button" style="margin-top:8px;width:100%">Send OTP</button>
+    <section class="hero-wrap" id="heroWrap">
+      <div class="hero-bg" id="heroBg"></div>
+      <div class="hero">
+        <div class="card">
+          <h2 class="headline">Profile & Login</h2>
+          <p class="hero-lead">Create a simple profile to save your details for GreenWrite orders. You can log in with Google or your phone number.</p>
+          <ul class="small">
+            <li>Made only for school project demo (no real payments or sensitive data).</li>
+            <li>You can always log out from this page.</li>
+          </ul>
         </div>
 
-        <div id="otpBox" style="display:none">
-          <label class="small" for="otpInput">Enter OTP</label>
-          <input id="otpInput" type="text" placeholder="6-digit code" style="width:100%;padding:10px;margin-top:4px;border-radius:8px;border:1px solid #dcdcdc" />
-          <button id="verifyOtpBtn" class="btn" type="button" style="margin-top:8px;width:100%">Verify OTP</button>
-        </div>
-
-        <!-- reCAPTCHA container required by Firebase phone auth -->
-        <div id="recaptcha-container" style="margin-top:8px;font-size:0.8rem;color:var(--muted)"></div>
+        <aside class="hero-box">
+          <!-- Profile root where JS will build the UI -->
+          <div id="profileRoot" class="card" style="min-height:260px">
+            <p class="small" style="color:var(--muted)">Loading profile...</p>
+          </div>
+        </aside>
       </div>
+    </section>
 
-      <!-- Logged-in user info -->
-      <div id="userBox" style="display:none;margin-top:16px;padding-top:10px;border-top:1px solid rgba(0,0,0,0.06)">
-        <h3 style="margin:0 0 6px">Your Profile</h3>
-        <p class="small"><strong>Name:</strong> <span id="uName">-</span></p>
-        <p class="small"><strong>Email:</strong> <span id="uEmail">-</span></p>
-        <p class="small"><strong>Phone:</strong> <span id="uPhone">-</span></p>
-        <p class="small" style="word-break:break-all"><strong>UID:</strong> <span id="uUid">-</span></p>
-
-        <button id="logoutBtn" class="btn secondary" type="button" style="margin-top:10px">Log out</button>
+    <section style="margin-top:24px">
+      <div class="card">
+        <h3>Why login?</h3>
+        <ul>
+          <li>Auto-fill name and phone in the order form.</li>
+          <li>See a history of your last orders (stored in your browser only).</li>
+          <li>Completely optional — you can still order as a guest.</li>
+        </ul>
       </div>
-
-      <!-- Error box -->
-      <p id="authError" class="small" style="margin-top:10px;color:#b00020;display:none"></p>
     </section>
 
     <footer style="margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:12px">
-      <p style="color:var(--muted)">Made by Team GreenWrite — Class 11. Write your future. Grow your planet.</p>
+      <p style="color:var(--muted)">Made by Team GreenWrite — Class 11.</p>
       <p style="margin:0;font-size:0.95rem;color:var(--muted)">Website created by <strong>Bharat</strong> — Team GreenWrite</p>
     </footer>
   </main>
 
-  <!-- back to top -->
-  <button id="topBtn" class="top-btn" aria-label="Back to top">↑</button>
-
-  <!-- floating WhatsApp -->
+  <!-- global floating WhatsApp (mobile) -->
   <a id="waFloatBottom" class="whats-float" href="https://wa.me/584161689126" target="_blank" aria-label="WhatsApp">💬</a>
 
-  <!-- shared UI script (header, dark mode, etc.) -->
+  <!-- Main shared JS (header, dark mode, etc.) -->
   <script src="assets/js/script.js"></script>
-
-  <!-- Firebase Auth for this page -->
+  <!-- Profile / Firebase auth (module) -->
   <script type="module" src="assets/js/profile.js"></script>
 </body>
 </html>
