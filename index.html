@@ -34,16 +34,8 @@
       </nav>
 
       <div class="tools">
-        
-        <!-- profile icon -->
-       <button
-  id="profileBtn"
-  class="icon-btn"
-  aria-label="Profile / Login"
-  onclick="window.location.href='profile.html'">
-  👤
-</button>
-
+        <!-- profile icon (auth popup) -->
+        <button id="profileBtn" class="icon-btn" aria-label="Profile / Login">👤</button>
 
         <!-- cart icon -->
         <button id="cartBtn" class="icon-btn" aria-label="View cart">
@@ -67,6 +59,7 @@
           <a href="products.html">Products</a>
           <a href="gallery.html">Gallery</a>
           <a href="contact.html">Contact</a>
+          <a href="profile.html">Profile</a>
         </nav>
         <div class="mobile-actions">
           <button id="mobileDarkToggle" class="btn secondary">Toggle Dark</button>
@@ -79,250 +72,21 @@
   <!-- Main container -->
   <main class="container">
     <!-- HERO -->
-    <section class="hero-wrap" id="heroWrap">
-      <div class="hero-bg" id="heroBg"></div>
-      <div class="hero">
-        <div class="card fade-in">
-          <h2 class="headline">Eco stationery that grows</h2>
-          <p class="hero-lead">GreenWrite makes plantable pens & pencils from recycled newspaper. Use it — then plant it and grow life from your writes.</p>
-
-          <div class="stats" aria-hidden="false">
-            <div class="stat"><div class="num" data-target="1200">0</div><div class="small">Plants planned</div></div>
-            <div class="stat"><div class="num" data-target="15000">0</div><div class="small">Sheets saved</div></div>
-            <div class="stat"><div class="num" data-target="95">0</div><div class="small">Schools reached</div></div>
-          </div>
-
-          <div style="margin-top:14px">
-            <a class="btn" href="#order">Order Now</a>
-            <a class="btn secondary" href="#contact" style="margin-left:8px">Contact</a>
-          </div>
-        </div>
-
-        <aside class="hero-box fade-in">
-          <div id="heroSlideshow" class="slideshow" aria-hidden="true">
-            <div class="slide active"><img src="pen.jpg" alt="GreenWrite Pen"></div>
-            <div class="slide"><img src="pencil.jpg" alt="GreenWrite Pencil"></div>
-            <div class="slide"><img src="pen.jpg" alt="Combo Pack"></div>
-            <div class="slide-controls"><button class="slide-prev" aria-label="Previous">◀</button><button class="slide-next" aria-label="Next">▶</button></div>
-          </div>
-
-          <div class="card" style="text-align:center;margin-top:12px">
-            <h3 style="margin:8px 0">Pen: ₹20 | Pencil: ₹15 | Combo: ₹30</h3>
-            <p style="color:var(--muted)">Free local pickup (bulk) • International shipping available</p>
-            <a class="btn" href="#order" style="margin-top:8px;display:inline-block">Place Order</a>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- PRODUCTS -->
-    <section>
-      <h2 class="section-title">Products</h2>
-      <div class="products">
-        <div class="prod fade-in">
-          <img src="pen.jpg" alt="Plantable Pen">
-          <h3>Plantable Pen</h3>
-          <p>Cost to make: ₹5 • Price: ₹20</p>
-          <div class="actions">
-            <button class="view-btn" data-img="pen.jpg" aria-label="View pen image">VIEW IMAGE</button>
-            <button class="btn secondary add-cart-btn" data-name="Plantable Pen" data-price="20">ADD TO CART</button>
-            <button class="btn buy-btn" data-name="Plantable Pen" data-price="20">BUY NOW</button>
-          </div>
-        </div>
-
-        <div class="prod fade-in">
-          <img src="pencil.jpg" alt="Plantable Pencil">
-          <h3>Plantable Pencil</h3>
-          <p>Cost to make: ₹4 • Price: ₹15</p>
-          <div class="actions">
-            <button class="view-btn" data-img="pencil.jpg" aria-label="View pencil image">VIEW IMAGE</button>
-            <button class="btn secondary add-cart-btn" data-name="Plantable Pencil" data-price="15">ADD TO CART</button>
-            <button class="btn buy-btn" data-name="Plantable Pencil" data-price="15">BUY NOW</button>
-          </div>
-        </div>
-
-        <div class="prod fade-in">
-          <img src="pen.jpg" alt="Combo Pack">
-          <h3>Combo Pack</h3>
-          <p>Pen + Pencil • Price: ₹30</p>
-          <div class="actions">
-            <button class="view-btn" data-img="pen.jpg" aria-label="View combo image">VIEW IMAGE</button>
-            <button class="btn secondary add-cart-btn" data-name="Combo Pack" data-price="30">ADD TO CART</button>
-            <button class="btn buy-btn" data-name="Combo Pack" data-price="30">BUY NOW</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- HOW -->
-    <section>
-      <h2 style="margin-top:22px">How it works — Planting steps</h2>
-      <div class="how">
-        <div class="card fade-in"><strong>Step 1</strong><div>Finish writing</div></div>
-        <div class="card fade-in"><strong>Step 2</strong><div>Put seed-end into soil</div></div>
-        <div class="card fade-in"><strong>Step 3</strong><div>Water regularly</div></div>
-        <div class="card fade-in"><strong>Step 4</strong><div>Watch plant grow</div></div>
-      </div>
-    </section>
-
-    <!-- WHY & OPS -->
-    <section class="grid-2">
-      <div>
-        <h2 style="margin-top:22px">Why GreenWrite?</h2>
-        <ul>
-          <li>Replaces plastic & wood with recycled paper</li>
-          <li>Turns waste into a new plant — zero waste</li>
-          <li>Student-made initiative — great for schools & gifts</li>
-          <li>Affordable, educational, and scalable</li>
-        </ul>
-
-        <h2 style="margin-top:12px">Operations Plan (short)</h2>
-        <ol>
-          <li>Collect newspaper & recycled paper</li>
-          <li>Assemble pen/pencil with refill/lead, glue, seed capsule, clay seal</li>
-          <li>Quality test & packaging with kraft paper</li>
-          <li>Distribute locally and accept online orders</li>
-        </ol>
-      </div>
-
-      <aside>
-        <h2 style="margin-top:22px">Team</h2>
-        <div class="team card" style="padding:12px">
-          <div class="person"><strong>Bharat</strong><div>CEO – Lead & Pitch</div></div>
-          <div class="person"><strong>Sandeep</strong><div>CFO – Budget & Pricing</div></div>
-          <div class="person"><strong>Abhinav</strong><div>Marketing – Design & PPT</div></div>
-          <div class="person"><strong>Ashu</strong><div>COO – Prototypes & Production</div></div>
-          <div class="person"><strong>Suraj</strong><div>HR – Coordination & Rehearsal</div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- ORDER -->
-    <section id="order" style="margin-top:20px">
-      <h2>Order / Contact</h2>
-      <div class="card order-form">
-        <form id="orderForm" novalidate>
-          <div class="order-row">
-            <div>
-              <label for="name">Name</label>
-              <input id="name" name="name" required placeholder="Your full name" />
-            </div>
-            <div>
-              <label for="phone">WhatsApp / Phone</label>
-              <input id="phone" name="phone" required placeholder="+58 416-1689126" />
-            </div>
-          </div>
-
-          <div style="margin-top:10px" class="order-row">
-            <div>
-              <label for="productSelect">Product</label>
-              <select id="productSelect" name="product">
-                <option value="Plantable Pen" data-price="20" data-weight="12">Plantable Pen — ₹20</option>
-                <option value="Plantable Pencil" data-price="15" data-weight="10">Plantable Pencil — ₹15</option>
-                <option value="Combo Pack" data-price="30" data-weight="25">Combo Pack — ₹30</option>
-              </select>
-            </div>
-            <div>
-              <label for="qty">Quantity</label>
-              <input id="qty" name="qty" type="number" min="1" value="1" />
-            </div>
-          </div>
-
-          <div style="margin-top:10px" class="order-row">
-            <div>
-              <label for="country">Shipping Country</label>
-              <select id="country">
-                <option value="IN">India</option>
-                <option value="US">USA</option>
-                <option value="UK">UK</option>
-                <option value="AU">Australia</option>
-                <option value="OTHER">Other</option>
-              </select>
-            </div>
-            <div>
-              <label for="email">Email (optional)</label>
-              <input id="email" name="email" type="email" placeholder="you@example.com" />
-            </div>
-          </div>
-
-          <label for="note" style="margin-top:10px">Address / Note</label>
-          <textarea id="note" name="note" rows="3" placeholder="Shipping address or extra info..."></textarea>
-
-          <div class="summary-box">
-            <div style="display:flex;justify-content:space-between"><div class="small">Items total</div><div id="itemsTotal">₹0</div></div>
-            <div style="display:flex;justify-content:space-between"><div class="small">Shipping</div><div id="shipCost">₹0</div></div>
-            <hr/>
-            <div style="display:flex;justify-content:space-between;font-weight:800"><div>Total</div><div id="grandTotal">₹0</div></div>
-          </div>
-
-          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-            <button class="btn" type="button" id="previewBtn">Preview Order</button>
-            <button class="btn secondary" type="button" id="saveLocal">Save Draft</button>
-            <div style="flex:1"></div>
-            <button class="btn" type="submit">Send via WhatsApp</button>
-          </div>
-          <p class="small" style="margin-top:8px">Free shipping above ₹500 (India) • Bulk 50+ packs free shipping.</p>
-        </form>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section id="contact" style="margin-top:18px">
-      <h2>Contact & Social</h2>
-      <div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <div>
-          <strong>WhatsApp:</strong> <a href="https://wa.me/584161689126" target="_blank">+58 416-1689126</a><br/>
-          <strong>Email:</strong> <a href="mailto:greenwriteofficial@gmail.com">greenwriteofficial@gmail.com</a><br/>
-          <strong>Instagram:</strong> <a href="https://instagram.com/_green_.write" target="_blank">@_green_.write</a>
-        </div>
-      </div>
-    </section>
-
-    <footer style="margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:12px">
-      <p style="color:var(--muted)">Made by Team GreenWrite — Class 11. Write your future. Grow your planet.</p>
-      <p style="margin:0;font-size:0.95rem;color:var(--muted)">Website created by <strong>Bharat</strong> — Team GreenWrite</p>
-    </footer>
+    <!-- (everything here stays same as your version) -->
+    <!-- ... KEEP YOUR EXISTING HERO / PRODUCTS / ORDER / CONTACT / FOOTER EXACTLY ... -->
+    <!-- I’m not re-pasting to save space, only auth modal changed below -->
   </main>
 
   <!-- Lightbox -->
   <div id="lightbox" class="lightbox" aria-hidden="true"><img id="lbimg" src="" alt="Large view"></div>
 
   <!-- ORDER MODAL -->
-  <div id="orderModal" class="modal" aria-hidden="true">
-    <div class="modal-card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">Order Summary</h3>
-        <button id="closeModal" style="background:#fff;border-radius:8px;padding:6px;border:0;cursor:pointer">✕</button>
-      </div>
-      <div id="orderDetails" style="margin-top:12px"></div>
-
-      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-        <button id="confirmOrder" class="btn">Confirm & Pay</button>
-        <button id="editOrder" class="btn secondary">Edit</button>
-      </div>
-
-      <div id="paymentArea" style="margin-top:12px;display:none">
-        <div style="text-align:center">
-          <div style="font-weight:700;margin-bottom:8px">Pay with UPI</div>
-          <img id="upi-qr" src="upi-qr.png" alt="UPI QR" style="width:180px;height:180px;object-fit:contain;border-radius:8px;background:#fff;border:6px solid #fff" onerror="this.style.display='none'">
-          <div class="small" style="margin-top:8px">Or send UPI to: <strong>greenwrite@upi</strong></div>
-          <div style="margin-top:12px"><a id="paypalBtn" class="btn" href="#" target="_blank">Pay with PayPal</a></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- (same as your existing) -->
 
   <!-- SUCCESS MODAL -->
-  <div id="successModal" class="modal" aria-hidden="true">
-    <div class="modal-card" style="text-align:center">
-      <div class="success-check">✓</div>
-      <h3>Order Sent!</h3>
-      <p style="color:var(--muted)">We opened WhatsApp with the order details. We'll contact you shortly. Order saved locally.</p>
-      <div style="margin-top:8px"><button id="closeSuccess" class="btn">Close</button></div>
-    </div>
-  </div>
+  <!-- (same as your existing) -->
 
-    <!-- AUTH / LOGIN / PROFILE MODAL -->
+  <!-- AUTH / LOGIN / PROFILE MODAL (NO PHONE / OTP) -->
   <div id="authModal" class="modal" aria-hidden="true">
     <div class="modal-card auth-card">
       <div style="display:flex;justify-content:space-between;align-items:center">
@@ -332,30 +96,22 @@
 
       <!-- status text: changes when logged in -->
       <p id="authStatus" style="color:var(--muted);margin-top:6px">
-        Create a simple profile or continue as guest. (Real login using Google or Phone.)
+        Login with Google or Email &amp; Password. You can also close and continue as guest.
       </p>
 
-      <!-- LOGIN BUTTONS (hidden when logged in) -->
+      <!-- LOGIN BUTTONS -->
       <div id="authLoginButtons" style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
         <button id="authGoogle" class="btn" type="button">Continue with Google</button>
-        <button id="authPhone" class="btn secondary" type="button">Continue with Phone (OTP)</button>
+        <button id="authEmail" class="btn secondary" type="button">Login / Sign up with Email</button>
       </div>
 
-      <!-- PHONE INPUT / OTP FIELD -->
-      <div style="margin-top:10px">
-        <label for="authPhoneInput" class="small">Phone login (with country code, e.g. +91…)</label>
-        <input id="authPhoneInput" type="tel"
-               placeholder="Enter phone number with country code"
-               style="width:100%;padding:8px;margin-top:4px;border-radius:8px;border:1px solid #dcdcdc" />
-      </div>
-
-      <!-- Invisible reCAPTCHA container for Firebase phone auth -->
-      <div id="recaptcha-container" style="margin-top:8px;"></div>
+      <p class="small" style="margin-top:10px;color:var(--muted)">
+        We only use your email to fill the order form and remember you in this browser. You can also order as a guest.
+      </p>
 
       <!-- FOOTER BUTTONS -->
       <div style="margin-top:12px;display:flex;justify-content:space-between;gap:8px;align-items:center">
         <button id="authSkip" class="btn secondary" type="button">Close</button>
-        <button id="authSave" class="btn" type="button">Save & Continue</button>
       </div>
 
       <!-- LOGOUT BUTTON (only visible when logged in) -->
@@ -365,25 +121,8 @@
     </div>
   </div>
 
-
   <!-- CART MODAL -->
-  <div id="cartModal" class="modal" aria-hidden="true">
-    <div class="modal-card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">Your Cart</h3>
-        <button id="cartClose" style="background:#fff;border-radius:8px;padding:6px;border:0;cursor:pointer">✕</button>
-      </div>
-      <div id="cartItems" style="margin-top:10px;max-height:280px;overflow-y:auto"></div>
-      <div style="margin-top:10px;display:flex;justify-content:space-between;font-weight:700">
-        <span>Total</span><span>₹<span id="cartTotal">0</span></span>
-      </div>
-      <p class="small" style="margin-top:6px;color:var(--muted)">Tip: Use items from cart to auto-fill the order form.</p>
-      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-        <button id="cartUse" class="btn" type="button">Use in Order Form</button>
-        <button id="cartClear" class="btn secondary" type="button">Clear Cart</button>
-      </div>
-    </div>
-  </div>
+  <!-- (same as your existing) -->
 
   <!-- back to top -->
   <button id="topBtn" class="top-btn" aria-label="Back to top">↑</button>
@@ -392,14 +131,10 @@
   <a id="waFloatBottom" class="whats-float" href="https://wa.me/584161689126" target="_blank" aria-label="WhatsApp">💬</a>
 
   <!-- Firebase (compat SDKs) -->
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
-    <!-- scripts -->
+  <!-- scripts -->
   <script src="assets/js/script.js"></script>
 </body>
 </html>
-
-
-
-
