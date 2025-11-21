@@ -24,15 +24,21 @@ const firebaseConfig = {
 };
 
 // === Init Firebase ===
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-auth.languageCode = 'en'; // or 'hi'
-const googleProvider = new GoogleAuthProvider();
+let app, auth, googleProvider;
 
-// === Helper to select elements safely ===
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  auth.languageCode = "en";
+  googleProvider = new GoogleAuthProvider();
+} catch (e) {
+  console.error("Firebase init error:", e);
+  alert("Firebase failed to initialize. Check console for details.");
+}
+
+// === Helper ===
 const $ = (id) => document.getElementById(id);
 
-// UI elements
 const googleBtn = $("googleBtn");
 const phoneInput = $("phoneInput");
 const sendOtpBtn = $("sendOtpBtn");
@@ -52,51 +58,73 @@ const uUid = $("uUid");
 let recaptchaVerifier = null;
 let confirmationResult = null;
 
-// =============== STATUS / ERROR HELPERS ===============
-function setStatus(msg){
+// ===== Status & error helpers =====
+function setStatus(msg) {
   if (statusEl) statusEl.textContent = msg;
-}
-function setError(msg){
-  if (!errorEl) return;
-  if (!msg){ errorEl.style.display = "none"; errorEl.textContent = ""; }
-  else { errorEl.style.display = "block"; errorEl.textContent = msg; }
+  console.log("[AUTH STATUS]", msg);
 }
 
-// =============== RECAPTCHA SETUP ===============
-function setupRecaptcha(){
+function setError(msg) {
+  if (!errorEl) return;
+  if (!msg) {
+    errorEl.style.display = "none";
+    errorEl.textContent = "";
+  } else {
+    errorEl.style.display = "block";
+    errorEl.textContent = msg;
+    console.error("[AUTH ERROR]", msg);
+  }
+}
+
+// ===== reCAPTCHA for phone auth =====
+function setupRecaptcha() {
+  if (!auth) return null;
   if (recaptchaVerifier) return recaptchaVerifier;
   recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
     size: "invisible",
     callback: () => {
-      // reCAPTCHA solved automatically when sendOtp is called
+      console.log("reCAPTCHA solved.");
     }
   });
   return recaptchaVerifier;
 }
 
-// =============== GOOGLE SIGN-IN ===============
-if (googleBtn){
+// ===== GOOGLE SIGN-IN =====
+if (googleBtn) {
   googleBtn.addEventListener("click", async () => {
+    if (!auth || !googleProvider) {
+      alert("Firebase is not ready. Check your Firebase config.");
+      return;
+    }
     setError("");
     setStatus("Opening Google sign-in...");
+
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       setStatus(`Signed in as ${user.displayName || user.email || "user"}`);
     } catch (err) {
-      console.error(err);
-      setStatus("Google sign-in cancelled or failed.");
-      setError(err.message || "Google sign-in failed.");
+      console.error("Google sign-in error:", err);
+      // Common useful messages:
+      // auth/operation-not-allowed → Enable Google provider in Firebase
+      // auth/unauthorized-domain → Add your domain to Authorized domains
+      setStatus("Google sign-in failed.");
+      setError(err.code + " — " + (err.message || "Google sign-in error."));
+      alert("Google sign-in error: " + err.code);
     }
   });
 }
 
-// =============== PHONE OTP FLOW ===============
-if (sendOtpBtn){
+// ===== PHONE OTP FLOW =====
+if (sendOtpBtn) {
   sendOtpBtn.addEventListener("click", async () => {
+    if (!auth) {
+      alert("Firebase is not ready. Check your Firebase config.");
+      return;
+    }
     setError("");
     const phoneNumber = (phoneInput && phoneInput.value.trim()) || "";
-    if (!phoneNumber){
+    if (!phoneNumber) {
       setError("Please enter your phone number with country code (e.g. +91...).");
       return;
     }
@@ -107,23 +135,28 @@ if (sendOtpBtn){
       setStatus("OTP sent! Please check your phone.");
       if (otpBox) otpBox.style.display = "block";
     } catch (err) {
-      console.error(err);
+      console.error("Send OTP error:", err);
       setStatus("Failed to send OTP.");
-      setError(err.message || "Could not send OTP. Check phone number format.");
+      setError(err.code + " — " + (err.message || "Could not send OTP."));
+      alert("Send OTP error: " + err.code);
     }
   });
 }
 
-if (verifyOtpBtn){
+if (verifyOtpBtn) {
   verifyOtpBtn.addEventListener("click", async () => {
+    if (!auth) {
+      alert("Firebase is not ready. Check your Firebase config.");
+      return;
+    }
     setError("");
-    if (!confirmationResult){
+    if (!confirmationResult) {
       setError("Please request OTP first.");
       return;
     }
     const code = (otpInput && otpInput.value.trim()) || "";
-    if (!code){
-      setError("Please enter the OTP code.");
+    if (!code) {
+      setError("Please enter the OTP.");
       return;
     }
     setStatus("Verifying OTP...");
@@ -132,49 +165,57 @@ if (verifyOtpBtn){
       const user = result.user;
       setStatus(`Signed in with phone: ${user.phoneNumber || "success"}`);
     } catch (err) {
-      console.error(err);
+      console.error("Verify OTP error:", err);
       setStatus("Failed to verify OTP.");
-      setError(err.message || "Invalid OTP. Try again.");
+      setError(err.code + " — " + (err.message || "Invalid OTP."));
+      alert("Verify OTP error: " + err.code);
     }
   });
 }
 
-// =============== LOGOUT ===============
-if (logoutBtn){
+// ===== LOGOUT =====
+if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {
+    if (!auth) {
+      alert("Firebase is not ready. Check your Firebase config.");
+      return;
+    }
     setError("");
     setStatus("Logging out...");
     try {
       await signOut(auth);
       setStatus("Logged out.");
     } catch (err) {
-      console.error(err);
+      console.error("Logout error:", err);
       setStatus("Logout failed.");
-      setError(err.message || "Could not logout.");
+      setError(err.code + " — " + (err.message || "Could not logout."));
+      alert("Logout error: " + err.code);
     }
   });
 }
 
-// =============== AUTH STATE LISTENER ===============
-onAuthStateChanged(auth, (user) => {
-  if (user){
-    // logged in
-    if (loginBox) loginBox.style.display = "none";
-    if (userBox) userBox.style.display = "block";
+// ===== AUTH STATE LISTENER =====
+if (auth) {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      if (loginBox) loginBox.style.display = "none";
+      if (userBox) userBox.style.display = "block";
 
-    if (uName) uName.textContent = user.displayName || "(no name)";
-    if (uEmail) uEmail.textContent = user.email || "-";
-    if (uPhone) uPhone.textContent = user.phoneNumber || "-";
-    if (uUid) uUid.textContent = user.uid;
+      if (uName) uName.textContent = user.displayName || "(no name)";
+      if (uEmail) uEmail.textContent = user.email || "-";
+      if (uPhone) uPhone.textContent = user.phoneNumber || "-";
+      if (uUid) uUid.textContent = user.uid;
 
-    setStatus("You are logged in.");
-    setError("");
-  } else {
-    // logged out
-    if (loginBox) loginBox.style.display = "flex";
-    if (userBox) userBox.style.display = "none";
+      setStatus("You are logged in.");
+      setError("");
+    } else {
+      if (loginBox) loginBox.style.display = "flex";
+      if (userBox) userBox.style.display = "none";
 
-    setStatus("Not logged in.");
-    setError("");
-  }
-});
+      setStatus("Not logged in.");
+      setError("");
+    }
+  });
+} else {
+  setStatus("Firebase not initialized.");
+}
