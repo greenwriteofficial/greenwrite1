@@ -134,71 +134,87 @@
        MOBILE FLOATING PRODUCTS BUTTON (READY TO USE)
        ===================================================== */
 
-    .mobile-products-btn {
-      display: none;
+    /* ================================
+   Mobile Floating Products Button
+   ================================ */
 
-      position: fixed;
-      left: 50%;
-      bottom: calc(16px + env(safe-area-inset-bottom));
-      transform: translateX(-50%) translateY(16px);
-      z-index: 9999;
+.mobile-products-btn {
+  display: none; /* hidden by default */
 
-      height: 52px;
-      padding: 0 22px;
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(16px);
+  z-index: 9999;
 
-      display: flex;
-      align-items: center;
-      gap: 10px;
+  height: 52px;
+  padding: 0 22px;
 
-      background: linear-gradient(135deg, #00c97b, #00a86b);
-      color: #ffffff;
-      font-weight: 600;
-      font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
-      border-radius: 999px;
-      box-shadow:
-        0 10px 25px rgba(0, 0, 0, 0.18),
-        0 2px 6px rgba(0, 0, 0, 0.12);
+  background: linear-gradient(135deg, #00c97b, #00a86b);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.2px;
 
-      text-decoration: none;
-      -webkit-tap-highlight-color: transparent;
+  border-radius: 999px;
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.12);
 
-      transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
-    }
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 
-    .mobile-products-btn .mpb-icon {
-      font-size: 18px;
-    }
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
 
-    .mobile-products-btn:active {
-      transform: translateX(-50%) scale(0.96);
-    }
+/* Icon */
+.mobile-products-btn .mpb-icon {
+  font-size: 18px;
+  line-height: 1;
+}
 
-    @keyframes mpb-float-in {
-      from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(24px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-    }
+/* Tap / hover micro-interaction */
+.mobile-products-btn:active {
+  transform: translateX(-50%) scale(0.96);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.2);
+}
 
-    @media (max-width: 768px) {
-      .mobile-products-btn {
-        display: flex;
-        animation: mpb-float-in 0.4s ease forwards;
-      }
-    }
+/* Subtle entrance animation */
+@keyframes mpb-float-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
 
-    @media (min-width: 769px) {
-      .mobile-products-btn {
-        display: none !important;
-      }
-    }
+/* ================================
+   Mobile-only visibility
+   ================================ */
+@media (max-width: 768px) {
+  .mobile-products-btn {
+    display: flex;
+    animation: mpb-float-in 0.4s ease forwards;
+  }
+}
+
+/* Desktop / tablet safety */
+@media (min-width: 769px) {
+  .mobile-products-btn {
+    display: none !important;
+  }
+}
   </style>
 </head>
 
@@ -268,3 +284,4 @@
 
 </body>
 </html>
+
