@@ -1,136 +1,471 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>GreenWrite — v6 Ultra</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>GreenWrite — Eco Marketplace</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
+
 :root{
-  --green:#4cff8f;
-  --bg:#050816;
-  --glass:rgba(255,255,255,.07);
-}
-*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
-body{background:var(--bg);color:#fff;overflow-x:hidden}
-
-/* canvases */
-#shader, #bg{
-  position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2
+--green:#39ff88;
+--dark:#050816;
+--glass:rgba(255,255,255,.07);
 }
 
-/* nav */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
+
+body{
+background:var(--dark);
+color:white;
+overflow-x:hidden;
+}
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:-2;
+}
+
+/* NAV */
+
 nav{
-  position:fixed;top:0;width:100%;display:flex;justify-content:space-between;
-  padding:22px 8%;background:rgba(0,0,0,.35);backdrop-filter:blur(16px);z-index:10
+position:fixed;
+top:0;
+width:100%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:22px 8%;
+background:rgba(0,0,0,.35);
+backdrop-filter:blur(16px);
+z-index:10;
 }
-.logo{font-weight:800;color:var(--green);font-size:20px}
-.nav-links{display:flex;gap:28px}
-.nav-links a{text-decoration:none;color:#fff;opacity:.85}
-.nav-links a:hover{color:var(--green);opacity:1}
 
-/* hero */
+.logo{
+font-weight:800;
+color:var(--green);
+font-size:20px;
+cursor:pointer;
+}
+
+.nav-links{
+display:flex;
+gap:30px;
+}
+
+.nav-links a{
+text-decoration:none;
+color:white;
+opacity:.85;
+transition:.25s;
+}
+
+.nav-links a:hover{
+color:var(--green);
+opacity:1;
+}
+
+/* HERO */
+
 .hero{
-  height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 20px
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:0 20px;
 }
-.hero h1{font-size:88px;line-height:1;max-width:1000px}
-.hero span{color:var(--green)}
-.hero p{margin-top:22px;font-size:20px;opacity:.85}
-.hero-buttons{margin-top:44px;display:flex;gap:20px;justify-content:center}
-.btn{padding:16px 34px;border-radius:40px;font-weight:600;text-decoration:none}
-.primary{background:var(--green);color:#000}
-.secondary{border:1px solid var(--green);color:var(--green)}
 
-/* sections */
-.section{
-  min-height:120vh;display:flex;align-items:center;padding:120px 10%
+.hero h1{
+font-size:90px;
+font-weight:800;
+line-height:1;
 }
-.section-inner{max-width:600px;background:var(--glass);padding:42px;border-radius:20px;backdrop-filter:blur(18px)}
-.section h2{font-size:60px;color:var(--green);margin-bottom:16px}
-.section p{font-size:20px;line-height:1.6;opacity:.9}
 
-/* products */
-.products{padding:160px 10%}
-.products h2{font-size:60px;margin-bottom:40px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:36px}
+.hero span{
+color:var(--green);
+}
+
+.hero-sub{
+margin-top:20px;
+font-size:22px;
+max-width:700px;
+opacity:.85;
+}
+
+.hero-buttons{
+margin-top:40px;
+display:flex;
+gap:20px;
+justify-content:center;
+}
+
+.btn{
+padding:16px 36px;
+border-radius:40px;
+font-weight:600;
+text-decoration:none;
+transition:.25s;
+}
+
+.primary{
+background:var(--green);
+color:black;
+}
+
+.primary:hover{
+background:#24ff75;
+transform:translateY(-3px);
+}
+
+.secondary{
+border:1px solid var(--green);
+color:var(--green);
+}
+
+.secondary:hover{
+background:rgba(0,255,120,.1);
+}
+
+/* SEARCH BAR */
+
+.search-box{
+margin-top:40px;
+display:flex;
+justify-content:center;
+}
+
+.search-box input{
+
+width:500px;
+max-width:90%;
+padding:16px 20px;
+border-radius:40px;
+border:none;
+outline:none;
+font-size:16px;
+}
+
+/* CATEGORY */
+
+.categories{
+padding:80px 10%;
+}
+
+.category-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+gap:20px;
+margin-top:30px;
+}
+
+.category{
+background:var(--glass);
+padding:30px;
+border-radius:20px;
+text-align:center;
+transition:.25s;
+}
+
+.category:hover{
+transform:translateY(-8px);
+box-shadow:0 15px 40px rgba(0,255,120,.2);
+}
+
+.category h4{
+margin-top:10px;
+color:var(--green);
+}
+
+/* SOCIAL PROOF */
+
+.trusted{
+padding:80px 10%;
+text-align:center;
+opacity:.8;
+}
+
+.brand-row{
+display:flex;
+justify-content:center;
+gap:40px;
+flex-wrap:wrap;
+margin-top:20px;
+font-weight:600;
+}
+
+/* TESTIMONIAL */
+
+.testimonials{
+padding:100px 10%;
+}
+
+.testimonial-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:30px;
+margin-top:40px;
+}
+
+.testimonial{
+background:var(--glass);
+padding:30px;
+border-radius:20px;
+}
+
+/* PRODUCTS */
+
+.products{
+padding:120px 10%;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:40px;
+margin-top:40px;
+}
+
 .card{
-  background:var(--glass);padding:36px;border-radius:20px;border:1px solid rgba(255,255,255,.1);transition:.35s
+background:var(--glass);
+padding:35px;
+border-radius:20px;
+transition:.25s;
 }
-.card:hover{transform:translateY(-12px);box-shadow:0 18px 60px rgba(0,255,120,.25)}
-.card h3{color:var(--green);margin-bottom:10px}
 
-footer{text-align:center;padding:60px;opacity:.6}
+.card:hover{
+transform:translateY(-10px);
+box-shadow:0 18px 60px rgba(0,255,120,.25);
+}
 
-/* seed click particle */
-.seed{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--green);pointer-events:none}
+.card h3{
+color:var(--green);
+margin-bottom:10px;
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:60px;
+opacity:.6;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+.hero h1{
+font-size:50px;
+}
+
+.hero-sub{
+font-size:18px;
+}
+
+}
+
 </style>
+
 </head>
 
 <body>
 
-<canvas id="shader"></canvas>
 <canvas id="bg"></canvas>
 
 <nav>
+
 <div class="logo">🌱 GreenWrite</div>
+
 <div class="nav-links">
-<a href="#">Home</a>
 <a href="#">Marketplace</a>
 <a href="#">Products</a>
+<a href="#">About</a>
 <a href="#">Contact</a>
 </div>
+
 </nav>
 
+<!-- HERO -->
+
 <section class="hero">
+
 <div>
-<h1>Write your future.<br><span>Grow your planet.</span></h1>
-<p>A futuristic eco-marketplace built by the next generation.</p>
+
+<h1>
+Write your future.<br>
+<span>Grow your planet.</span>
+</h1>
+
+<p class="hero-sub">
+
+The marketplace for eco-friendly products.  
+Discover sustainable tools, plantable stationery, and green innovations — all in one place.
+
+</p>
+
+<div class="search-box">
+
+<input placeholder="Search eco products...">
+
+</div>
+
 <div class="hero-buttons">
-<a class="btn primary">Explore Marketplace</a>
-<a class="btn secondary">Our Mission</a>
+
+<a class="btn primary">Shop Marketplace</a>
+
+<a class="btn secondary">Explore Mission</a>
+
 </div>
+
 </div>
+
 </section>
 
-<section class="section">
-<div class="section-inner">
-<h2>Plant the Future</h2>
-<p>Every GreenWrite pen contains real seeds. After writing, plant the pen and watch herbs or flowers grow.</p>
+<!-- CATEGORY -->
+
+<section class="categories">
+
+<h2>Explore Categories</h2>
+
+<div class="category-grid">
+
+<div class="category">
+🌱
+<h4>Plantable Pens</h4>
 </div>
+
+<div class="category">
+🪥
+<h4>Bamboo Brushes</h4>
+</div>
+
+<div class="category">
+🚴
+<h4>Eco Transport</h4>
+</div>
+
+<div class="category">
+🌞
+<h4>Solar Gear</h4>
+</div>
+
+<div class="category">
+♻️
+<h4>Recycled Goods</h4>
+</div>
+
+</div>
+
 </section>
 
-<section class="section">
-<div class="section-inner">
-<h2>Sustainable Living</h2>
-<p>Our marketplace connects eco products, bamboo essentials, recycled crafts and plastic-free solutions.</p>
+<!-- TRUSTED -->
+
+<section class="trusted">
+
+<h3>Trusted by eco communities worldwide</h3>
+
+<div class="brand-row">
+
+<span>EcoHub</span>
+<span>GreenEarth</span>
+<span>SustainLab</span>
+<span>EcoFuture</span>
+
 </div>
+
 </section>
 
-<section class="section">
-<div class="section-inner">
-<h2>Youth Powered</h2>
-<p>GreenWrite proves students can build real technology that changes how people shop sustainably.</p>
-</div>
-</section>
+<!-- PRODUCTS -->
 
 <section class="products">
-<h2>Marketplace</h2>
+
+<h2>Featured Marketplace Products</h2>
+
 <div class="grid">
-<div class="card"><h3>Plantable Pens</h3><p>Write then plant. Grow herbs and flowers.</p></div>
-<div class="card"><h3>Bamboo Brushes</h3><p>Eco-friendly alternatives to plastic.</p></div>
-<div class="card"><h3>Eco Bottles</h3><p>Sustainable hydration solutions.</p></div>
-<div class="card"><h3>Handmade Crafts</h3><p>Support eco artisans.</p></div>
+
+<div class="card">
+<h3>Plantable Pen</h3>
+<p>Write, plant, and grow herbs.</p>
 </div>
+
+<div class="card">
+<h3>Bamboo Toothbrush</h3>
+<p>Plastic-free daily essentials.</p>
+</div>
+
+<div class="card">
+<h3>Solar Power Bank</h3>
+<p>Renewable charging anywhere.</p>
+</div>
+
+<div class="card">
+<h3>Recycled Notebook</h3>
+<p>Made from 100% recycled paper.</p>
+</div>
+
+</div>
+
 </section>
 
-<footer>GreenWrite © 2026</footer>
+<!-- TESTIMONIAL -->
 
-<!-- Three.js -->
+<section class="testimonials">
+
+<h2>What People Say</h2>
+
+<div class="testimonial-grid">
+
+<div class="testimonial">
+“GreenWrite makes eco products easy to find and affordable.”
+</div>
+
+<div class="testimonial">
+“Amazing idea. I planted my pen and it grew basil!”
+</div>
+
+<div class="testimonial">
+“The future of sustainable shopping.”
+</div>
+
+</div>
+
+</section>
+
+<footer>
+
+GreenWrite © 2026
+
+</footer>
+
+<!-- THREE JS -->
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
+
 const scene=new THREE.Scene()
-const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,1000)
+
+const camera=new THREE.PerspectiveCamera(
+70,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+)
+
 camera.position.z=4
 
 const renderer=new THREE.WebGLRenderer({
@@ -138,142 +473,86 @@ canvas:document.querySelector("#bg"),
 alpha:true,
 antialias:true
 })
-renderer.setSize(innerWidth,innerHeight)
-renderer.setPixelRatio(Math.min(devicePixelRatio,2))
 
-/* STARFIELD */
-const starGeo=new THREE.BufferGeometry()
-const starCount=2000
-const starPos=new Float32Array(starCount*3)
-for(let i=0;i<starCount*3;i++) starPos[i]=(Math.random()-.5)*40
-starGeo.setAttribute("position",new THREE.BufferAttribute(starPos,3))
-const starMat=new THREE.PointsMaterial({size:.02,color:"#ffffff"})
-const stars=new THREE.Points(starGeo,starMat)
-scene.add(stars)
+renderer.setSize(window.innerWidth,window.innerHeight)
 
-/* EARTH SHADER */
-const earthGeo=new THREE.SphereGeometry(1.2,64,64)
+/* EARTH */
 
-const earthMat=new THREE.ShaderMaterial({
-uniforms:{time:{value:0}},
-vertexShader:`
-varying vec3 vPos;
-void main(){
-vPos=position;
-gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);
-}
-`,
-fragmentShader:`
-varying vec3 vPos;
-float rand(vec2 n){return fract(sin(dot(n,vec2(12.9898,4.1414)))*43758.5453);}
-float noise(vec2 p){
-vec2 ip=floor(p);
-vec2 u=fract(p);
-u=u*u*(3.0-2.0*u);
-float res=mix(
-mix(rand(ip),rand(ip+vec2(1,0)),u.x),
-mix(rand(ip+vec2(0,1)),rand(ip+vec2(1,1)),u.x),u.y);
-return res;
-}
-void main(){
-float n=noise(vPos.xy*3.0);
-vec3 water=vec3(0.0,0.25,0.6);
-vec3 land=vec3(0.1,0.6,0.2);
-vec3 col=mix(water,land,step(.55,n));
-gl_FragColor=vec4(col,1.0);
-}
-`
+const geo=new THREE.SphereGeometry(1.2,64,64)
+
+const mat=new THREE.MeshStandardMaterial({
+color:0x2aff8a,
+roughness:.7
 })
 
-const earth=new THREE.Mesh(earthGeo,earthMat)
+const earth=new THREE.Mesh(geo,mat)
+
 scene.add(earth)
 
-/* ATMOSPHERE */
-const glow=new THREE.Mesh(
-new THREE.SphereGeometry(1.32,64,64),
-new THREE.MeshBasicMaterial({
-color:0x4cff8f,
-transparent:true,
-opacity:.18
-}))
-scene.add(glow)
+/* LIGHT */
 
-/* LEAF PARTICLES */
-const leafGeo=new THREE.BufferGeometry()
-const leafCount=1500
-const leafPos=new Float32Array(leafCount*3)
-for(let i=0;i<leafCount*3;i++) leafPos[i]=(Math.random()-.5)*15
-leafGeo.setAttribute("position",new THREE.BufferAttribute(leafPos,3))
-const leafMat=new THREE.PointsMaterial({size:.04,color:"#4cff8f"})
-const leaves=new THREE.Points(leafGeo,leafMat)
-scene.add(leaves)
+const light=new THREE.PointLight(0xffffff,1.2)
 
-/* MOUSE ORBIT CONTROL */
-let targetX=0,targetY=0
-let currentX=0,currentY=0
+light.position.set(5,5,5)
+
+scene.add(light)
+
+/* PARTICLES */
+
+const count=2000
+
+const pos=new Float32Array(count*3)
+
+for(let i=0;i<count*3;i++){
+pos[i]=(Math.random()-.5)*20
+}
+
+const pGeo=new THREE.BufferGeometry()
+
+pGeo.setAttribute(
+"position",
+new THREE.BufferAttribute(pos,3)
+)
+
+const pMat=new THREE.PointsMaterial({
+size:.03,
+color:"#4cff8f"
+})
+
+const particles=new THREE.Points(pGeo,pMat)
+
+scene.add(particles)
 
 function animate(){
+
 requestAnimationFrame(animate)
-currentX+=(targetX-currentX)*0.05
-currentY+=(targetY-currentY)*0.05
-earth.rotation.y=currentX
-earth.rotation.x=currentY
-leaves.rotation.y+=.0005
+
+earth.rotation.y+=.002
+particles.rotation.y+=.0005
+
 renderer.render(scene,camera)
+
 }
+
 animate()
 
-/* mouse & touch */
-function updateRotation(x,y){
-targetX=(x/innerWidth-.5)*3
-targetY=(y/innerHeight-.5)*1.5
-}
-addEventListener("mousemove",e=>updateRotation(e.clientX,e.clientY))
-addEventListener("touchmove",e=>{
-updateRotation(e.touches[0].clientX,e.touches[0].clientY)
+document.addEventListener("mousemove",e=>{
+
+earth.rotation.x=(e.clientY/window.innerHeight-.5)*.6
+earth.rotation.y+=(e.clientX/window.innerWidth-.5)*.01
+
 })
 
-/* resize */
-addEventListener("resize",()=>{
-camera.aspect=innerWidth/innerHeight
+window.addEventListener("resize",()=>{
+
+camera.aspect=window.innerWidth/window.innerHeight
+
 camera.updateProjectionMatrix()
-renderer.setSize(innerWidth,innerHeight)
-})
-</script>
 
-<!-- GSAP -->
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+renderer.setSize(window.innerWidth,window.innerHeight)
 
-<script>
-gsap.registerPlugin(ScrollTrigger)
-gsap.from(".hero h1",{y:150,opacity:0,duration:1.2})
-gsap.from(".hero p",{y:80,opacity:0,delay:.4})
-gsap.from(".hero-buttons",{y:60,opacity:0,delay:.8})
-
-gsap.utils.toArray(".section").forEach(sec=>{
-gsap.from(sec.querySelector(".section-inner"),{
-scrollTrigger:{trigger:sec,start:"top 70%"},
-y:100,opacity:0,duration:1
-})
 })
 
-gsap.from(".card",{
-scrollTrigger:{trigger:".grid",start:"top 80%"},
-opacity:0,y:80,stagger:.2
-})
-</script>
-
-<!-- seed click -->
-<script>
-document.body.addEventListener("click",e=>{
-const seed=document.createElement("div")
-seed.className="seed"
-seed.style.left=e.clientX+"px"
-seed.style.top=e.clientY+"px"
-document.body.appendChild(seed)
-gsap.to(seed,{y:-90,scale:3,opacity:0,duration:1,onComplete:()=>seed.remove()})
-})
 </script>
 
 </body>
