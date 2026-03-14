@@ -152,24 +152,34 @@ const stars=new THREE.Points(starGeo,starMat)
 scene.add(stars)
 
 /* EARTH SHADER */
-const earthGeo = new THREE.SphereGeometry(1.2, 128, 128)
+const earthGeo = new THREE.SphereGeometry(1.2,128,128)
 
 const earthMat = new THREE.ShaderMaterial({
-uniforms:{ time:{value:0} },
+uniforms:{
+time:{value:0},
+sunDir:{value:new THREE.Vector3(1,0,1).normalize()}
+},
 
 vertexShader:`
 varying vec3 vPos;
+varying vec3 vNormal;
 varying vec2 vUv;
 
 void main(){
 vPos = position;
+vNormal = normalize(normalMatrix * normal);
 vUv = uv;
 gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
 }
 `,
 
 fragmentShader:`
+
+uniform float time;
+uniform vec3 sunDir;
+
 varying vec3 vPos;
+varying vec3 vNormal;
 varying vec2 vUv;
 
 float rand(vec2 n){
@@ -182,8 +192,8 @@ vec2 u=fract(p);
 u=u*u*(3.0-2.0*u);
 
 float res=mix(
-mix(rand(ip),rand(ip+vec2(1.0,0.0)),u.x),
-mix(rand(ip+vec2(0.0,1.0)),rand(ip+vec2(1.0,1.0)),u.x),
+mix(rand(ip),rand(ip+vec2(1.,0.)),u.x),
+mix(rand(ip+vec2(0.,1.)),rand(ip+vec2(1.,1.)),u.x),
 u.y);
 
 return res;
@@ -192,7 +202,7 @@ return res;
 float fbm(vec2 x){
 float v=0.0;
 float a=.5;
-for(int i=0;i<5;i++){
+for(int i=0;i<6;i++){
 v+=a*noise(x);
 x*=2.;
 a*=.5;
@@ -202,39 +212,59 @@ return v;
 
 void main(){
 
-float n = fbm(vUv*6.0);
+float terrain = fbm(vUv*4.0);
 
-/* colors */
-vec3 deepWater = vec3(0.0,0.08,0.35);
-vec3 shallowWater = vec3(0.0,0.3,0.7);
-vec3 beach = vec3(0.85,0.8,0.55);
-vec3 land = vec3(0.1,0.55,0.2);
-vec3 mountain = vec3(0.45,0.4,0.35);
+/* animated ocean waves */
+float wave = sin(vUv.x*50. + time*2.) * 0.01;
 
-/* terrain */
+/* water colors */
+vec3 deepWater = vec3(0.0,0.05,0.35);
+vec3 shallowWater = vec3(0.0,0.35,0.75);
+
+/* land colors */
+vec3 grass = vec3(0.1,0.55,0.2);
+vec3 mountain = vec3(0.45,0.45,0.45);
+vec3 snow = vec3(1.0);
+
+/* choose terrain */
 vec3 color;
 
-if(n < 0.45){
-color = mix(deepWater,shallowWater,n*2.0);
+if(terrain < 0.55){
+color = mix(deepWater,shallowWater,terrain*1.4);
+color += wave;
 }
-else if(n < 0.5){
-color = beach;
+else if(terrain < 0.75){
+color = grass;
 }
-else if(n < 0.75){
-color = land;
-}
-else{
+else if(terrain < 0.9){
 color = mountain;
 }
+else{
+color = snow;
+}
 
-gl_FragColor = vec4(color,1.0);
+/* day night shading */
+float light = dot(normalize(vNormal),normalize(sunDir));
+light = clamp(light,0.,1.);
+
+/* city lights at night */
+float city = step(0.55,terrain)*step(terrain,0.7);
+vec3 cityColor = vec3(1.0,0.8,0.4)*noise(vUv*200.0);
+
+vec3 finalColor = color * light;
+
+if(light < 0.2){
+finalColor += cityColor * city * (0.2-light)*4.0;
+}
+
+gl_FragColor = vec4(finalColor,1.0);
+
 }
 `
 })
 
-const earth = new THREE.Mesh(earthGeo, earthMat)
+const earth = new THREE.Mesh(earthGeo,earthMat)
 scene.add(earth)
-
 /* ATMOSPHERE */
 const glow=new THREE.Mesh(
 new THREE.SphereGeometry(1.32,64,64),
@@ -308,25 +338,59 @@ ease:"sine.inOut"
 REALISTIC CLOUD LAYER
 ----------------------------- */
 
-const cloudGeo = new THREE.SphereGeometry(1.25,64,64)
+const cloudGeo = new THREE.SphereGeometry(1.23,128,128)
 
-const cloudMat = new THREE.MeshStandardMaterial({
-color:0xffffff,
+const cloudMat = new THREE.ShaderMaterial({
 transparent:true,
-opacity:0.25,
-depthWrite:false
+uniforms:{time:{value:0}},
+
+vertexShader:`
+varying vec2 vUv;
+void main(){
+vUv=uv;
+gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);
+}
+`,
+
+fragmentShader:`
+
+uniform float time;
+varying vec2 vUv;
+
+float rand(vec2 n){
+return fract(sin(dot(n,vec2(12.9898,4.1414)))*43758.5453);
+}
+
+float noise(vec2 p){
+vec2 ip=floor(p);
+vec2 u=fract(p);
+u=u*u*(3.0-2.0*u);
+
+float res=mix(
+mix(rand(ip),rand(ip+vec2(1.,0.)),u.x),
+mix(rand(ip+vec2(0.,1.)),rand(ip+vec2(1.,1.)),u.x),
+u.y);
+
+return res;
+}
+
+void main(){
+
+vec2 uv=vUv;
+uv.x+=time*0.01;
+
+float n=noise(uv*6.0);
+
+float clouds=smoothstep(.55,.7,n);
+
+gl_FragColor=vec4(vec3(1.),clouds*0.6);
+
+}
+`
 })
 
-const clouds = new THREE.Mesh(cloudGeo,cloudMat)
-
+const clouds=new THREE.Mesh(cloudGeo,cloudMat)
 scene.add(clouds)
-
-gsap.to(clouds.rotation,{
-y:Math.PI*2,
-duration:120,
-repeat:-1,
-ease:"none"
-})
 
 
 /* -----------------------------
