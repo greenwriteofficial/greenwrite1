@@ -257,6 +257,181 @@ yoyo:true,
 ease:"sine.inOut"
 })
 
+/* -----------------------------
+REALISTIC CLOUD LAYER
+----------------------------- */
+
+const cloudGeo = new THREE.SphereGeometry(1.25,64,64)
+
+const cloudMat = new THREE.MeshStandardMaterial({
+color:0xffffff,
+transparent:true,
+opacity:0.25,
+depthWrite:false
+})
+
+const clouds = new THREE.Mesh(cloudGeo,cloudMat)
+
+scene.add(clouds)
+
+gsap.to(clouds.rotation,{
+y:Math.PI*2,
+duration:120,
+repeat:-1,
+ease:"none"
+})
+
+
+/* -----------------------------
+LEAF WIND PHYSICS
+----------------------------- */
+
+let leafAngle = 0
+
+function updateLeafWind(){
+
+leafAngle += 0.002
+
+leaves.rotation.y += 0.0008
+
+leaves.position.x = Math.sin(leafAngle)*0.3
+leaves.position.z = Math.cos(leafAngle)*0.3
+
+}
+
+const originalAnimate = animate
+
+animate = function(){
+
+updateLeafWind()
+
+originalAnimate()
+
+}
+
+
+/* -----------------------------
+TREE GROWTH ON PLANET
+----------------------------- */
+
+function spawnTree(x,y,z){
+
+const trunk = new THREE.Mesh(
+
+new THREE.CylinderGeometry(0.01,0.02,0.12,6),
+
+new THREE.MeshStandardMaterial({
+color:0x8b5a2b
+})
+
+)
+
+const leavesGeo = new THREE.SphereGeometry(0.05,8,8)
+
+const crown = new THREE.Mesh(
+leavesGeo,
+new THREE.MeshStandardMaterial({
+color:0x2aff8a
+})
+)
+
+crown.position.y = 0.08
+
+const tree = new THREE.Group()
+
+tree.add(trunk)
+tree.add(crown)
+
+tree.position.set(x,y,z)
+
+tree.lookAt(earth.position)
+
+tree.scale.set(0,0,0)
+
+scene.add(tree)
+
+gsap.to(tree.scale,{
+x:1,
+y:1,
+z:1,
+duration:1.2,
+ease:"back.out(2)"
+})
+
+}
+
+
+/* click to plant tree */
+
+document.addEventListener("click",(e)=>{
+
+const dir = new THREE.Vector3(
+(Math.random()-.5),
+(Math.random()-.5),
+(Math.random()-.5)
+).normalize()
+
+spawnTree(
+dir.x*1.2,
+dir.y*1.2,
+dir.z*1.2
+)
+
+})
+
+
+/* -----------------------------
+ECO SATELLITES
+----------------------------- */
+
+function createSatellite(radius){
+
+const body = new THREE.Mesh(
+new THREE.BoxGeometry(0.06,0.04,0.04),
+new THREE.MeshStandardMaterial({
+color:0xaaaaaa
+})
+)
+
+const panel = new THREE.Mesh(
+new THREE.BoxGeometry(0.16,0.02,0.06),
+new THREE.MeshStandardMaterial({
+color:0x3366ff
+})
+)
+
+panel.position.x = 0.15
+
+const satellite = new THREE.Group()
+
+satellite.add(body)
+satellite.add(panel)
+
+scene.add(satellite)
+
+let angle = Math.random()*Math.PI*2
+
+function orbit(){
+
+angle += 0.005
+
+satellite.position.x = Math.cos(angle)*radius
+satellite.position.z = Math.sin(angle)*radius
+satellite.position.y = Math.sin(angle*2)*0.4
+
+satellite.lookAt(earth.position)
+
+requestAnimationFrame(orbit)
+
+}
+
+orbit()
+
+}
+
+createSatellite(2)
+createSatellite(2.5)
+createSatellite(3)
 
 /* -----------------------
 STAR TWINKLE
