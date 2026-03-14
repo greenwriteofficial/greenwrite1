@@ -241,6 +241,219 @@ renderer.setSize(innerWidth,innerHeight)
 })
 </script>
 
+<!-- EXTRA INSANE ANIMATIONS -->
+
+<script>
+
+/* -----------------------
+EARTH GLOW BREATHING
+----------------------- */
+
+gsap.to(glow.material,{
+opacity:0.35,
+duration:2,
+repeat:-1,
+yoyo:true,
+ease:"sine.inOut"
+})
+
+
+/* -----------------------
+STAR TWINKLE
+----------------------- */
+
+gsap.to(stars.material,{
+opacity:0.4,
+duration:1.8,
+repeat:-1,
+yoyo:true,
+ease:"sine.inOut"
+})
+
+
+/* -----------------------
+LEAF FLOAT MOTION
+----------------------- */
+
+gsap.to(leaves.rotation,{
+x:0.4,
+duration:40,
+repeat:-1,
+yoyo:true,
+ease:"none"
+})
+
+
+/* -----------------------
+PLANET SLOW DRIFT
+----------------------- */
+
+gsap.to(earth.rotation,{
+y:"+=6.28",
+duration:120,
+repeat:-1,
+ease:"none"
+})
+
+
+/* -----------------------
+MAGNETIC BUTTON EFFECT
+----------------------- */
+
+document.querySelectorAll(".btn").forEach(btn=>{
+
+btn.addEventListener("mousemove",e=>{
+
+const rect=btn.getBoundingClientRect()
+
+const x=e.clientX-rect.left-rect.width/2
+const y=e.clientY-rect.top-rect.height/2
+
+gsap.to(btn,{
+x:x*0.3,
+y:y*0.3,
+duration:.4,
+ease:"power3.out"
+})
+
+})
+
+btn.addEventListener("mouseleave",()=>{
+
+gsap.to(btn,{
+x:0,
+y:0,
+duration:.6,
+ease:"elastic.out(1,0.4)"
+})
+
+})
+
+})
+
+
+/* -----------------------
+BUTTON RIPPLE CLICK
+----------------------- */
+
+document.querySelectorAll(".btn").forEach(btn=>{
+
+btn.addEventListener("click",e=>{
+
+const ripple=document.createElement("span")
+
+ripple.style.position="absolute"
+ripple.style.width="10px"
+ripple.style.height="10px"
+ripple.style.background="white"
+ripple.style.borderRadius="50%"
+ripple.style.left=e.offsetX+"px"
+ripple.style.top=e.offsetY+"px"
+ripple.style.pointerEvents="none"
+
+btn.appendChild(ripple)
+
+gsap.to(ripple,{
+scale:20,
+opacity:0,
+duration:.8,
+onComplete:()=>ripple.remove()
+})
+
+})
+
+})
+
+
+/* -----------------------
+CURSOR LIGHT HALO
+----------------------- */
+
+const halo=document.createElement("div")
+
+halo.style.position="fixed"
+halo.style.width="300px"
+halo.style.height="300px"
+halo.style.borderRadius="50%"
+halo.style.pointerEvents="none"
+halo.style.background="radial-gradient(circle, rgba(76,255,143,0.25) 0%, rgba(0,0,0,0) 70%)"
+halo.style.mixBlendMode="screen"
+halo.style.zIndex="1"
+
+document.body.appendChild(halo)
+
+document.addEventListener("mousemove",e=>{
+
+gsap.to(halo,{
+x:e.clientX-150,
+y:e.clientY-150,
+duration:.3,
+ease:"power2.out"
+})
+
+})
+
+
+/* -----------------------
+CARD HOVER GLOW
+----------------------- */
+
+document.querySelectorAll(".card").forEach(card=>{
+
+card.addEventListener("mouseenter",()=>{
+
+gsap.to(card,{
+scale:1.05,
+duration:.4,
+boxShadow:"0 30px 80px rgba(76,255,143,.35)"
+})
+
+})
+
+card.addEventListener("mouseleave",()=>{
+
+gsap.to(card,{
+scale:1,
+duration:.4,
+boxShadow:"0 20px 60px rgba(0,255,120,.25)"
+})
+
+})
+
+})
+
+
+/* -----------------------
+SECTION PARALLAX TEXT
+----------------------- */
+
+gsap.utils.toArray(".section-inner").forEach(sec=>{
+
+gsap.to(sec,{
+y:-80,
+scrollTrigger:{
+trigger:sec,
+scrub:1
+}
+})
+
+})
+
+
+/* -----------------------
+SUBTLE HERO FLOAT
+----------------------- */
+
+gsap.to(".hero h1",{
+y:15,
+duration:4,
+repeat:-1,
+yoyo:true,
+ease:"sine.inOut"
+})
+
+</script>
+
 <!-- GSAP -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
