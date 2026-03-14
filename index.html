@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>GreenWrite — Eco Marketplace</title>
+<title>GreenWrite</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
@@ -14,10 +15,14 @@
 :root{
 --green:#4cff8f;
 --bg:#050816;
---glass:rgba(255,255,255,.07);
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
 
 body{
 background:var(--bg);
@@ -27,7 +32,7 @@ overflow-x:hidden;
 
 /* canvas */
 
-#bg{
+canvas{
 position:fixed;
 top:0;
 left:0;
@@ -46,25 +51,29 @@ display:flex;
 justify-content:space-between;
 padding:18px 6%;
 background:rgba(0,0,0,.35);
-backdrop-filter:blur(16px);
+backdrop-filter:blur(15px);
 z-index:10;
 }
 
 .logo{
 font-weight:800;
 color:var(--green);
+font-size:18px;
 }
 
 .nav-links{
 display:flex;
-gap:22px;
+gap:25px;
 }
 
 .nav-links a{
 text-decoration:none;
 color:white;
-opacity:.85;
-font-size:14px;
+opacity:.8;
+}
+
+.nav-links a:hover{
+color:var(--green);
 }
 
 /* hero */
@@ -83,59 +92,36 @@ font-size:clamp(40px,8vw,90px);
 line-height:1;
 }
 
-.hero span{color:var(--green)}
+.hero span{
+color:var(--green);
+}
 
 .hero p{
-margin-top:18px;
+margin-top:20px;
+opacity:.8;
 font-size:18px;
-opacity:.85;
-}
-
-.hero-buttons{
-margin-top:35px;
-display:flex;
-gap:16px;
-justify-content:center;
-flex-wrap:wrap;
-}
-
-.btn{
-padding:14px 28px;
-border-radius:40px;
-font-weight:600;
-text-decoration:none;
-}
-
-.primary{
-background:var(--green);
-color:black;
-}
-
-.secondary{
-border:1px solid var(--green);
-color:var(--green);
 }
 
 /* sections */
 
 .section{
-min-height:110vh;
+min-height:120vh;
 display:flex;
 align-items:center;
-padding:80px 10%;
+padding:120px 10%;
 }
 
 .section-inner{
 max-width:600px;
-background:var(--glass);
-padding:36px;
+background:rgba(255,255,255,.07);
+padding:40px;
 border-radius:20px;
-backdrop-filter:blur(16px);
+backdrop-filter:blur(15px);
 }
 
 .section h2{
-font-size:clamp(28px,5vw,60px);
 color:var(--green);
+font-size:clamp(30px,5vw,60px);
 margin-bottom:10px;
 }
 
@@ -146,25 +132,45 @@ line-height:1.6;
 
 /* product viewer */
 
+.products{
+padding:150px 10%;
+}
+
+.products h2{
+font-size:clamp(30px,5vw,60px);
+margin-bottom:40px;
+}
+
 .viewer{
-height:70vh;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:40px;
+}
+
+.product{
+height:220px;
+background:rgba(255,255,255,.06);
+border-radius:20px;
 display:flex;
 align-items:center;
 justify-content:center;
+cursor:pointer;
+transition:.4s;
 }
 
-#productCanvas{
-width:100%;
-height:100%;
+.product:hover{
+transform:translateY(-10px);
+box-shadow:0 20px 50px rgba(0,255,120,.2);
 }
 
 footer{
 text-align:center;
-padding:40px;
+padding:60px;
 opacity:.6;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -184,24 +190,19 @@ opacity:.6;
 
 </nav>
 
+
 <section class="hero">
 
 <div>
 
 <h1>Write your future.<br><span>Grow your planet.</span></h1>
 
-<p>Eco-friendly marketplace powered by sustainability.</p>
-
-<div class="hero-buttons">
-
-<a class="btn primary">Explore</a>
-<a class="btn secondary">Learn More</a>
-
-</div>
+<p>The eco marketplace powered by the next generation.</p>
 
 </div>
 
 </section>
+
 
 <section class="section">
 
@@ -209,11 +210,15 @@ opacity:.6;
 
 <h2>Plant the Future</h2>
 
-<p>Plantable pens allow writing to become growth. When finished, plant the pen and grow herbs or flowers.</p>
+<p>
+Every GreenWrite pen contains seeds.
+When the ink ends, the plant begins.
+</p>
 
 </div>
 
 </section>
+
 
 <section class="section">
 
@@ -221,11 +226,14 @@ opacity:.6;
 
 <h2>Sustainable Living</h2>
 
-<p>GreenWrite connects eco products including bamboo essentials, recycled crafts and sustainable goods.</p>
+<p>
+GreenWrite connects eco products, bamboo essentials, recycled crafts and natural alternatives.
+</p>
 
 </div>
 
 </section>
+
 
 <section class="section">
 
@@ -233,15 +241,27 @@ opacity:.6;
 
 <h2>Youth Powered</h2>
 
-<p>Created by students building technology for a greener future.</p>
+<p>
+A student-built platform showing innovation can change the world.
+</p>
 
 </div>
 
 </section>
 
-<section class="viewer">
 
-<canvas id="productCanvas"></canvas>
+<section class="products">
+
+<h2>Marketplace</h2>
+
+<div class="viewer">
+
+<div class="product">Plantable Pens</div>
+<div class="product">Bamboo Brushes</div>
+<div class="product">Eco Bottles</div>
+<div class="product">Handmade Crafts</div>
+
+</div>
 
 </section>
 
@@ -251,128 +271,136 @@ GreenWrite © 2026
 
 </footer>
 
+
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
 <script>
 
-const canvas=document.querySelector("#bg")
-
 const scene=new THREE.Scene()
 
-const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,1000)
+const camera=new THREE.PerspectiveCamera(
+65,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+)
+
 camera.position.z=4
 
 const renderer=new THREE.WebGLRenderer({
-canvas,
+canvas:document.querySelector("#bg"),
 alpha:true,
 antialias:true
 })
 
-renderer.setSize(innerWidth,innerHeight)
-renderer.setPixelRatio(devicePixelRatio)
+renderer.setSize(window.innerWidth,window.innerHeight)
 
-/* lights */
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2))
 
-const light=new THREE.DirectionalLight(0xffffff,1.2)
-light.position.set(5,5,5)
-scene.add(light)
-
-/* textures */
-
-const loader=new THREE.TextureLoader()
-
-const earthMap=loader.load("assets/earth_day.jpg")
-const earthNormal=loader.load("assets/earth_normal.jpg")
-const earthSpec=loader.load("assets/earth_specular.jpg")
-const clouds=loader.load("assets/earth_clouds.png")
 
 /* earth */
 
 const earthGeo=new THREE.SphereGeometry(1.2,64,64)
 
-const earthMat=new THREE.MeshPhongMaterial({
-map:earthMap,
-normalMap:earthNormal,
-specularMap:earthSpec
+const earthMat=new THREE.MeshStandardMaterial({
+color:0x2aff8a,
+roughness:.7
 })
 
 const earth=new THREE.Mesh(earthGeo,earthMat)
+
 scene.add(earth)
+
 
 /* clouds */
 
-const cloudGeo=new THREE.SphereGeometry(1.22,64,64)
+const cloudGeo=new THREE.SphereGeometry(1.25,64,64)
 
-const cloudMat=new THREE.MeshLambertMaterial({
-map:clouds,
-transparent:true
+const cloudMat=new THREE.MeshStandardMaterial({
+color:0xffffff,
+transparent:true,
+opacity:.1
 })
 
-const cloudMesh=new THREE.Mesh(cloudGeo,cloudMat)
+const clouds=new THREE.Mesh(cloudGeo,cloudMat)
 
-scene.add(cloudMesh)
+scene.add(clouds)
 
-/* floating pen */
 
-const gltfLoader=new THREE.GLTFLoader()
+/* stars */
 
-gltfLoader.load("models/pen.glb",gltf=>{
-const pen=gltf.scene
-pen.scale.set(.7,.7,.7)
-pen.position.set(2,0,0)
-scene.add(pen)
+const starGeo=new THREE.BufferGeometry()
 
-function spinPen(){
-pen.rotation.y+=.01
-requestAnimationFrame(spinPen)
-}
+const starCount=2000
 
-spinPen()
+const starPos=new Float32Array(starCount*3)
 
+for(let i=0;i<starCount*3;i++)
+starPos[i]=(Math.random()-.5)*40
+
+starGeo.setAttribute(
+"position",
+new THREE.BufferAttribute(starPos,3)
+)
+
+const starMat=new THREE.PointsMaterial({
+size:.02,
+color:"#ffffff"
 })
 
-/* leaves */
+const stars=new THREE.Points(starGeo,starMat)
 
-const leafTex=loader.load("assets/leaf.png")
+scene.add(stars)
+
+
+/* leaves wind */
 
 const leafGeo=new THREE.BufferGeometry()
 
-const leafCount=800
+const leafCount=1500
 
-const pos=new Float32Array(leafCount*3)
+const leafPos=new Float32Array(leafCount*3)
 
-for(let i=0;i<leafCount*3;i++){
-pos[i]=(Math.random()-.5)*12
-}
+for(let i=0;i<leafCount*3;i++)
+leafPos[i]=(Math.random()-.5)*20
 
-leafGeo.setAttribute("position",new THREE.BufferAttribute(pos,3))
+leafGeo.setAttribute(
+"position",
+new THREE.BufferAttribute(leafPos,3)
+)
 
 const leafMat=new THREE.PointsMaterial({
-map:leafTex,
-size:.12,
-transparent:true
+size:.04,
+color:"#4cff8f"
 })
 
 const leaves=new THREE.Points(leafGeo,leafMat)
 
 scene.add(leaves)
 
-/* animation */
 
-let targetX=0,targetY=0
+/* light */
+
+const light=new THREE.PointLight(0xffffff,1.2)
+
+light.position.set(5,5,5)
+
+scene.add(light)
+
+
+/* animation */
 
 function animate(){
 
 requestAnimationFrame(animate)
 
-earth.rotation.y+=.001
-cloudMesh.rotation.y+=.0016
+earth.rotation.y+=.002
+clouds.rotation.y+=.003
 
-earth.rotation.y+=targetX
-earth.rotation.x+=targetY
-
-leaves.rotation.y+=.0006
+leaves.rotation.y+=.0005
 
 renderer.render(scene,camera)
 
@@ -380,31 +408,45 @@ renderer.render(scene,camera)
 
 animate()
 
-/* mouse + touch */
 
-function updateRotation(x,y){
-targetX=(x/innerWidth-.5)*.02
-targetY=(y/innerHeight-.5)*.02
+/* scroll camera */
+
+gsap.registerPlugin(ScrollTrigger)
+
+gsap.to(camera.position,{
+z:2,
+scrollTrigger:{
+trigger:".section",
+start:"top bottom",
+end:"bottom top",
+scrub:1
 }
-
-addEventListener("mousemove",e=>updateRotation(e.clientX,e.clientY))
-
-addEventListener("touchmove",e=>{
-updateRotation(e.touches[0].clientX,e.touches[0].clientY)
 })
+
+
+/* mouse rotation */
+
+document.addEventListener("mousemove",e=>{
+
+earth.rotation.x=(e.clientY/window.innerHeight-.5)*.6
+earth.rotation.y+=(e.clientX/window.innerWidth-.5)*.01
+
+})
+
 
 /* resize */
 
-addEventListener("resize",()=>{
+window.addEventListener("resize",()=>{
 
-camera.aspect=innerWidth/innerHeight
+camera.aspect=window.innerWidth/window.innerHeight
 camera.updateProjectionMatrix()
 
-renderer.setSize(innerWidth,innerHeight)
+renderer.setSize(window.innerWidth,window.innerHeight)
 
 })
 
 </script>
 
 </body>
+
 </html>
