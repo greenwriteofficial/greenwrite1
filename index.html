@@ -151,167 +151,43 @@ const starMat=new THREE.PointsMaterial({size:.02,color:"#ffffff"})
 const stars=new THREE.Points(starGeo,starMat)
 scene.add(stars)
 
-const earthGeo = new THREE.SphereGeometry(1.2,128,128)
+/* EARTH SHADER */
+const earthGeo=new THREE.SphereGeometry(1.2,64,64)
 
-const earthMat = new THREE.ShaderMaterial({
-
-uniforms:{
-time:{value:0},
-sunDir:{value:new THREE.Vector3(3,1,2).normalize()}
-},
-
+const earthMat=new THREE.ShaderMaterial({
+uniforms:{time:{value:0}},
 vertexShader:`
-
-varying vec3 vNormal;
-varying vec2 vUv;
-varying vec3 vWorld;
-
+varying vec3 vPos;
 void main(){
-
-vNormal = normalize(normalMatrix * normal);
-vUv = uv;
-vWorld = (modelMatrix * vec4(position,1.0)).xyz;
-
-gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
-
+vPos=position;
+gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);
 }
 `,
-
 fragmentShader:`
-
-uniform float time;
-uniform vec3 sunDir;
-
-varying vec3 vNormal;
-varying vec2 vUv;
-varying vec3 vWorld;
-
-/* noise */
-
-float rand(vec2 n){
-return fract(sin(dot(n,vec2(12.9898,78.233)))*43758.5453);
-}
-
+varying vec3 vPos;
+float rand(vec2 n){return fract(sin(dot(n,vec2(12.9898,4.1414)))*43758.5453);}
 float noise(vec2 p){
-
 vec2 ip=floor(p);
 vec2 u=fract(p);
-
 u=u*u*(3.0-2.0*u);
-
-return mix(
+float res=mix(
 mix(rand(ip),rand(ip+vec2(1,0)),u.x),
-mix(rand(ip+vec2(0,1)),rand(ip+vec2(1,1)),u.x),
-u.y);
+mix(rand(ip+vec2(0,1)),rand(ip+vec2(1,1)),u.x),u.y);
+return res;
 }
-
-float fbm(vec2 x){
-
-float v=0.;
-float a=.5;
-
-for(int i=0;i<6;i++){
-v+=a*noise(x);
-x*=2.;
-a*=.5;
-}
-
-return v;
-
-}
-
 void main(){
-
-vec3 normal = normalize(vNormal);
-
-/* continents */
-
-float terrain = fbm(vUv*3.0);
-terrain += fbm(vUv*8.0)*0.2;
-
-/* ocean colors */
-
-vec3 deepOcean = vec3(0.0,0.04,0.25);
-vec3 ocean = vec3(0.0,0.3,0.7);
-
-/* land */
-
-vec3 grass = vec3(0.1,0.55,0.2);
-vec3 mountain = vec3(0.5,0.45,0.4);
-vec3 snow = vec3(1.0);
-
-/* terrain selection */
-
-vec3 color;
-
-if(terrain < 0.5){
-
-color = mix(deepOcean,ocean,terrain*2.0);
-
+float n=noise(vPos.xy*3.0);
+vec3 water=vec3(0.0,0.25,0.6);
+vec3 land=vec3(0.1,0.6,0.2);
+vec3 col=mix(water,land,step(.55,n));
+gl_FragColor=vec4(col,1.0);
 }
-else if(terrain < 0.75){
-
-color = grass;
-
-}
-else if(terrain < 0.9){
-
-color = mountain;
-
-}
-else{
-
-color = snow;
-
-}
-
-/* sunlight */
-
-float sun = dot(normal,normalize(sunDir));
-sun = clamp(sun,0.0,1.0);
-
-/* ocean reflection */
-
-if(terrain < 0.5){
-
-vec3 viewDir = normalize(-vWorld);
-vec3 reflectDir = reflect(-sunDir,normal);
-
-float spec = pow(max(dot(viewDir,reflectDir),0.0),50.0);
-
-color += spec*0.6;
-
-}
-
-/* city lights */
-
-float city = step(.52,terrain)*step(terrain,.7);
-vec3 cityCol = vec3(1.0,0.8,0.5)*noise(vUv*200.0);
-
-vec3 finalColor = color * sun;
-
-if(sun < 0.2){
-
-finalColor += cityCol * city * (0.2-sun)*5.0;
-
-}
-
-/* atmospheric scattering */
-
-float atmosphere = pow(1.0 - dot(normal,vec3(0,0,1)),3.0);
-
-finalColor += vec3(0.2,0.4,1.0)*atmosphere*0.4;
-
-gl_FragColor = vec4(finalColor,1.0);
-
-}
-
 `
 })
 
-const earth = new THREE.Mesh(earthGeo,earthMat)
+const earth=new THREE.Mesh(earthGeo,earthMat)
 scene.add(earth)
-  
+
 /* ATMOSPHERE */
 const glow=new THREE.Mesh(
 new THREE.SphereGeometry(1.32,64,64),
@@ -381,215 +257,6 @@ yoyo:true,
 ease:"sine.inOut"
 })
 
-/* -----------------------------
-REALISTIC CLOUD LAYER
------------------------------ */
-
-const cloudGeo = new THREE.SphereGeometry(1.23,128,128)
-
-const cloudMat = new THREE.ShaderMaterial({
-transparent:true,
-uniforms:{time:{value:0}},
-
-vertexShader:`
-varying vec2 vUv;
-void main(){
-vUv=uv;
-gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);
-}
-`,
-
-fragmentShader:`
-
-uniform float time;
-varying vec2 vUv;
-
-float rand(vec2 n){
-return fract(sin(dot(n,vec2(12.9898,4.1414)))*43758.5453);
-}
-
-float noise(vec2 p){
-vec2 ip=floor(p);
-vec2 u=fract(p);
-u=u*u*(3.0-2.0*u);
-
-float res=mix(
-mix(rand(ip),rand(ip+vec2(1.,0.)),u.x),
-mix(rand(ip+vec2(0.,1.)),rand(ip+vec2(1.,1.)),u.x),
-u.y);
-
-return res;
-}
-
-void main(){
-
-vec2 uv=vUv;
-uv.x+=time*0.01;
-
-float n=noise(uv*6.0);
-
-float clouds=smoothstep(.55,.7,n);
-
-gl_FragColor=vec4(vec3(1.),clouds*0.6);
-
-}
-`
-})
-
-const clouds=new THREE.Mesh(cloudGeo,cloudMat)
-scene.add(clouds)
-
-
-/* -----------------------------
-LEAF WIND PHYSICS
------------------------------ */
-
-let leafAngle = 0
-
-function updateLeafWind(){
-
-leafAngle += 0.002
-
-leaves.rotation.y += 0.0008
-
-leaves.position.x = Math.sin(leafAngle)*0.3
-leaves.position.z = Math.cos(leafAngle)*0.3
-
-}
-
-const originalAnimate = animate
-
-animate = function(){
-
-updateLeafWind()
-
-originalAnimate()
-
-}
-
-
-/* -----------------------------
-TREE GROWTH ON PLANET
------------------------------ */
-
-function spawnTree(x,y,z){
-
-const trunk = new THREE.Mesh(
-
-new THREE.CylinderGeometry(0.01,0.02,0.12,6),
-
-new THREE.MeshStandardMaterial({
-color:0x8b5a2b
-})
-
-)
-
-const leavesGeo = new THREE.SphereGeometry(0.05,8,8)
-
-const crown = new THREE.Mesh(
-leavesGeo,
-new THREE.MeshStandardMaterial({
-color:0x2aff8a
-})
-)
-
-crown.position.y = 0.08
-
-const tree = new THREE.Group()
-
-tree.add(trunk)
-tree.add(crown)
-
-tree.position.set(x,y,z)
-
-tree.lookAt(earth.position)
-
-tree.scale.set(0,0,0)
-
-scene.add(tree)
-
-gsap.to(tree.scale,{
-x:1,
-y:1,
-z:1,
-duration:1.2,
-ease:"back.out(2)"
-})
-
-}
-
-
-/* click to plant tree */
-
-document.addEventListener("click",(e)=>{
-
-const dir = new THREE.Vector3(
-(Math.random()-.5),
-(Math.random()-.5),
-(Math.random()-.5)
-).normalize()
-
-spawnTree(
-dir.x*1.2,
-dir.y*1.2,
-dir.z*1.2
-)
-
-})
-
-
-/* -----------------------------
-ECO SATELLITES
------------------------------ */
-
-function createSatellite(radius){
-
-const body = new THREE.Mesh(
-new THREE.BoxGeometry(0.06,0.04,0.04),
-new THREE.MeshStandardMaterial({
-color:0xaaaaaa
-})
-)
-
-const panel = new THREE.Mesh(
-new THREE.BoxGeometry(0.16,0.02,0.06),
-new THREE.MeshStandardMaterial({
-color:0x3366ff
-})
-)
-
-panel.position.x = 0.15
-
-const satellite = new THREE.Group()
-
-satellite.add(body)
-satellite.add(panel)
-
-scene.add(satellite)
-
-let angle = Math.random()*Math.PI*2
-
-function orbit(){
-
-angle += 0.005
-
-satellite.position.x = Math.cos(angle)*radius
-satellite.position.z = Math.sin(angle)*radius
-satellite.position.y = Math.sin(angle*2)*0.4
-
-satellite.lookAt(earth.position)
-
-requestAnimationFrame(orbit)
-
-}
-
-orbit()
-
-}
-
-createSatellite(2)
-createSatellite(2.5)
-createSatellite(3)
 
 /* -----------------------
 STAR TWINKLE
