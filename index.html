@@ -1,287 +1,336 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>GreenWrite — Eco-Friendly Writing & Gifting</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="GreenWrite — Sustainable plantable pens, eco stationery & green gifting." />
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-  <style>
-    :root {
-      --green: #00c97b;
-      --green-dark: #00a86b;
-      --bg-dark: #0b0f19;
-      --text-light: #f5f7fb;
-      --card-bg: #ffffff;
-    }
+<title>GreenWrite — Eco Marketplace</title>
 
-    * {
-      box-sizing: border-box;
-      font-family: 'Poppins', system-ui, sans-serif;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-    body {
-      margin: 0;
-      background: #f5f7fb;
-      color: #111;
-    }
+<style>
 
-    /* ================= HEADER ================= */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: linear-gradient(90deg, #050816, #0b0f19);
-      padding: 0.75rem 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: white;
-      font-weight: 700;
-      font-size: 1.2rem;
-      text-decoration: none;
-    }
-
-    .logo span {
-      background: var(--green);
-      color: #000;
-      font-weight: 700;
-      border-radius: 50%;
-      width: 34px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    nav a {
-      color: #cfd3ff;
-      text-decoration: none;
-      margin-left: 1.2rem;
-      font-weight: 500;
-    }
-
-    nav a:hover {
-      color: #fff;
-    }
-
-    /* ================= HERO ================= */
-    .hero {
-      padding: 4rem 1.5rem;
-      background: radial-gradient(1200px 400px at top, #0b0f19, #050816);
-      color: white;
-      text-align: center;
-    }
-
-    .hero h1 {
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      margin-bottom: 1rem;
-    }
-
-    .hero h1 span {
-      color: var(--green);
-    }
-
-    .hero p {
-      max-width: 640px;
-      margin: 0 auto 2rem;
-      opacity: 0.9;
-    }
-
-    .hero-actions {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--green), var(--green-dark));
-      color: #000;
-      padding: 0.9rem 1.6rem;
-      border-radius: 999px;
-      font-weight: 600;
-      text-decoration: none;
-      box-shadow: 0 12px 30px rgba(0, 201, 123, 0.35);
-    }
-
-    .btn-outline {
-      border: 2px solid var(--green);
-      color: var(--green);
-      padding: 0.85rem 1.6rem;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    /* ================= FOOTER ================= */
-    footer {
-      text-align: center;
-      padding: 2rem 1rem;
-      color: #555;
-    }
-
-    /* =====================================================
-       MOBILE FLOATING PRODUCTS BUTTON (READY TO USE)
-       ===================================================== */
-
-    /* ================================
-   Mobile Floating Products Button
-   ================================ */
-
-.mobile-products-btn {
-  display: none; /* hidden by default */
-
-  position: fixed;
-  left: 50%;
-  bottom: calc(16px + env(safe-area-inset-bottom));
-  transform: translateX(-50%) translateY(16px);
-  z-index: 9999;
-
-  height: 52px;
-  padding: 0 22px;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  background: linear-gradient(135deg, #00c97b, #00a86b);
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 15px;
-  letter-spacing: 0.2px;
-
-  border-radius: 999px;
-  box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.18),
-    0 2px 6px rgba(0, 0, 0, 0.12);
-
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
 }
 
-/* Icon */
-.mobile-products-btn .mpb-icon {
-  font-size: 18px;
-  line-height: 1;
+body{
+background:#050816;
+color:white;
+overflow-x:hidden;
 }
 
-/* Tap / hover micro-interaction */
-.mobile-products-btn:active {
-  transform: translateX(-50%) scale(0.96);
-  box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.2);
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
 }
 
-/* Subtle entrance animation */
-@keyframes mpb-float-in {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+/* NAV */
+
+nav{
+display:flex;
+justify-content:space-between;
+padding:20px 8%;
+position:fixed;
+width:100%;
+backdrop-filter:blur(20px);
+background:rgba(0,0,0,0.25);
+z-index:10;
 }
 
-/* ================================
-   Mobile-only visibility
-   ================================ */
-@media (max-width: 768px) {
-  .mobile-products-btn {
-    display: flex;
-    animation: mpb-float-in 0.4s ease forwards;
-  }
+.logo{
+font-weight:700;
+font-size:20px;
+color:#6aff93;
 }
 
-/* Desktop / tablet safety */
-@media (min-width: 769px) {
-  .mobile-products-btn {
-    display: none !important;
-  }
+.nav-links{
+display:flex;
+gap:30px;
 }
-  </style>
+
+.nav-links a{
+color:white;
+text-decoration:none;
+font-size:14px;
+opacity:0.9;
+}
+
+/* HERO */
+
+.hero{
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:0 20px;
+}
+
+.hero h1{
+font-size:60px;
+max-width:800px;
+line-height:1.1;
+}
+
+.hero span{
+color:#6aff93;
+}
+
+.hero p{
+margin-top:20px;
+opacity:0.8;
+}
+
+.hero-buttons{
+margin-top:40px;
+display:flex;
+justify-content:center;
+gap:20px;
+}
+
+.btn{
+padding:14px 28px;
+border-radius:30px;
+text-decoration:none;
+font-weight:600;
+}
+
+.primary{
+background:#6aff93;
+color:#000;
+}
+
+.secondary{
+border:1px solid #6aff93;
+color:#6aff93;
+}
+
+/* FEATURES */
+
+.section{
+padding:120px 10%;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:40px;
+margin-top:50px;
+}
+
+.card{
+background:rgba(255,255,255,0.05);
+padding:40px;
+border-radius:20px;
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,0.1);
+}
+
+.card h3{
+margin-bottom:10px;
+color:#6aff93;
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:60px;
+opacity:0.7;
+}
+
+</style>
 </head>
 
 <body>
 
-  <!-- ================= HEADER ================= -->
-  <header>
-    <a href="index.html" class="logo">
-      <span>GW</span> GREENWRITE
-    </a>
-    <nav>
-      <a href="about.html">About</a>
-      <a href="impact.html">Our Impact</a>
-      <a href="products.html">Products</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </header>
+<canvas id="bg"></canvas>
 
-  <!-- ================= HERO ================= -->
-  <section class="hero">
-    <h1>The Future of <span>Sustainable</span><br>Writing & Gifting</h1>
-    <p>
-      GreenWrite turns everyday stationery into eco-friendly, plantable and
-      sustainable products that help protect the planet.
-    </p>
+<nav>
 
-    <div class="hero-actions">
-      <a href="products.html" class="btn-primary">Explore Products</a>
-      <a href="https://wa.me/918287734776" class="btn-outline">Partner with GreenWrite</a>
-    </div>
-  </section>
+<div class="logo">🌱 GreenWrite</div>
 
-  <!-- ================= FOOTER ================= -->
-  <footer>
-    © <span id="year"></span> GreenWrite. All rights reserved.
-  </footer>
+<div class="nav-links">
+<a href="#">Home</a>
+<a href="#">Marketplace</a>
+<a href="#">Products</a>
+<a href="#">Contact</a>
+</div>
 
-  <!-- ================= MOBILE FLOATING BUTTON ================= -->
-  <a href="products.html" class="mobile-products-btn" aria-label="View Products">
-    <span class="mpb-icon">🛍️</span>
-    <span>Products</span>
-  </a>
+</nav>
 
-  <!-- ================= OPTIONAL SMART HIDE JS ================= -->
-  <script>
-    (function () {
-      if (window.innerWidth > 768) return;
 
-      const btn = document.querySelector(".mobile-products-btn");
-      if (!btn) return;
+<section class="hero">
 
-      let lastScrollY = window.scrollY;
+<div>
 
-      window.addEventListener("scroll", () => {
-        const currentY = window.scrollY;
-        if (currentY > lastScrollY + 8) {
-          btn.style.transform = "translateX(-50%) translateY(90px)";
-        } else {
-          btn.style.transform = "translateX(-50%) translateY(0)";
-        }
-        lastScrollY = currentY;
-      }, { passive: true });
-    })();
+<h1>
+Write your future.  
+<span>Grow your planet.</span>
+</h1>
 
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+<p>
+India's student-built eco marketplace for sustainable products.
+</p>
+
+<div class="hero-buttons">
+
+<a class="btn primary" href="products.html">
+Explore Products
+</a>
+
+<a class="btn secondary" href="#">
+Learn More
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section class="section">
+
+<h2>Eco Marketplace</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>Plantable Stationery</h3>
+<p>Write then plant the seed capsule and grow herbs or flowers.</p>
+</div>
+
+<div class="card">
+<h3>Plastic Free Products</h3>
+<p>Bamboo brushes, bottles and eco alternatives.</p>
+</div>
+
+<div class="card">
+<h3>Student Built</h3>
+<p>GreenWrite is created by students promoting sustainability.</p>
+</div>
+
+</div>
+
+</section>
+
+<footer>
+
+GreenWrite © 2026
+
+</footer>
+
+
+<!-- THREE JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
+
+const scene = new THREE.Scene()
+
+const camera = new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+)
+
+const renderer = new THREE.WebGLRenderer({
+canvas:document.querySelector("#bg"),
+alpha:true
+})
+
+renderer.setSize(window.innerWidth,window.innerHeight)
+
+camera.position.z=5
+
+/* PARTICLES */
+
+const particlesGeometry = new THREE.BufferGeometry()
+
+const particlesCount = 2000
+
+const posArray = new Float32Array(particlesCount*3)
+
+for(let i=0;i<particlesCount*3;i++){
+
+posArray[i]=(Math.random()-0.5)*10
+
+}
+
+particlesGeometry.setAttribute(
+"position",
+new THREE.BufferAttribute(posArray,3)
+)
+
+const particlesMaterial = new THREE.PointsMaterial({
+size:0.02,
+color:"#6aff93"
+})
+
+const particlesMesh = new THREE.Points(
+particlesGeometry,
+particlesMaterial
+)
+
+scene.add(particlesMesh)
+
+
+/* ANIMATION */
+
+function animate(){
+
+requestAnimationFrame(animate)
+
+particlesMesh.rotation.y +=0.0008
+particlesMesh.rotation.x +=0.0004
+
+renderer.render(scene,camera)
+
+}
+
+animate()
+
+</script>
+
+
+<!-- GSAP -->
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+<script>
+
+gsap.from(".hero h1",{
+y:80,
+opacity:0,
+duration:1
+})
+
+gsap.from(".hero p",{
+y:60,
+opacity:0,
+delay:0.4,
+duration:1
+})
+
+gsap.from(".hero-buttons",{
+y:40,
+opacity:0,
+delay:0.8,
+duration:1
+})
+
+</script>
+
 
 </body>
 </html>
-
