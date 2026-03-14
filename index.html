@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>GreenWrite — Eco Marketplace</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
+:root{
+--green:#7dff9b;
+--bg:#04070f;
+--glass:rgba(255,255,255,.06);
 }
 
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif;}
+
 body{
-background:#04070f;
+background:var(--bg);
 color:white;
 overflow-x:hidden;
 }
 
-canvas{
+/* CANVAS LAYERS */
+
+#bg,#shader{
 position:fixed;
 top:0;
 left:0;
+width:100%;
+height:100%;
 z-index:-2;
 }
 
@@ -39,17 +41,15 @@ top:0;
 width:100%;
 display:flex;
 justify-content:space-between;
-align-items:center;
 padding:20px 8%;
-z-index:10;
-background:rgba(0,0,0,0.3);
+background:rgba(0,0,0,.35);
 backdrop-filter:blur(20px);
+z-index:10;
 }
 
 .logo{
-font-size:20px;
 font-weight:700;
-color:#7dff9b;
+color:var(--green);
 }
 
 .nav-links{
@@ -58,14 +58,13 @@ gap:30px;
 }
 
 .nav-links a{
-color:white;
 text-decoration:none;
+color:white;
 opacity:.8;
-transition:.3s;
 }
 
 .nav-links a:hover{
-color:#7dff9b;
+color:var(--green);
 opacity:1;
 }
 
@@ -81,14 +80,11 @@ padding:0 20px;
 }
 
 .hero h1{
-font-size:72px;
+font-size:70px;
 line-height:1.1;
-max-width:900px;
 }
 
-.hero span{
-color:#7dff9b;
-}
+.hero span{color:var(--green);}
 
 .hero p{
 margin-top:20px;
@@ -111,63 +107,76 @@ text-decoration:none;
 }
 
 .primary{
-background:#7dff9b;
-color:#000;
+background:var(--green);
+color:black;
 }
 
 .secondary{
-border:1px solid #7dff9b;
-color:#7dff9b;
+border:1px solid var(--green);
+color:var(--green);
 }
 
-/* SECTIONS */
+/* STORY SECTIONS */
 
-.section{
+.story{
+min-height:120vh;
+display:flex;
+align-items:center;
+padding:120px 10%;
+}
+
+.story-inner{
+max-width:500px;
+background:var(--glass);
+padding:40px;
+border-radius:20px;
+backdrop-filter:blur(20px);
+}
+
+.story h2{
+color:var(--green);
+margin-bottom:10px;
+}
+
+/* PRODUCT GRID */
+
+.products{
 padding:140px 10%;
-}
-
-.section h2{
-font-size:42px;
-margin-bottom:30px;
 }
 
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
 gap:40px;
-margin-top:60px;
+margin-top:50px;
 }
 
 .card{
-background:rgba(255,255,255,0.05);
+background:var(--glass);
 padding:40px;
 border-radius:20px;
-border:1px solid rgba(255,255,255,0.1);
-backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,.1);
 transition:.4s;
 }
 
 .card:hover{
 transform:translateY(-10px);
-box-shadow:0 20px 60px rgba(0,255,120,.15);
+box-shadow:0 20px 60px rgba(0,255,120,.2);
 }
 
-.card h3{
-color:#7dff9b;
-margin-bottom:10px;
-}
+.card h3{color:var(--green);margin-bottom:10px;}
 
 footer{
 text-align:center;
 padding:60px;
 opacity:.6;
 }
-
 </style>
 </head>
 
 <body>
 
+<canvas id="shader"></canvas>
 <canvas id="bg"></canvas>
 
 <nav>
@@ -183,148 +192,153 @@ opacity:.6;
 
 </nav>
 
-
 <section class="hero">
 
 <div>
 
-<h1>
-Write your future.  
-<span>Grow your planet.</span>
-</h1>
+<h1>Write your future.<br><span>Grow your planet.</span></h1>
 
-<p>
-The student-built eco marketplace for sustainable products.
-</p>
+<p>India's futuristic eco-friendly marketplace.</p>
 
 <div class="hero-buttons">
-
-<a class="btn primary" href="#">Explore Products</a>
-<a class="btn secondary" href="#">Our Mission</a>
-
+<a class="btn primary">Explore Products</a>
+<a class="btn secondary">Our Mission</a>
 </div>
 
 </div>
 
 </section>
 
+<!-- STORY SCROLL -->
 
-<section class="section">
+<section class="story">
 
-<h2>Eco Marketplace</h2>
+<div class="story-inner">
+<h2>Plant the Future</h2>
+<p>Every GreenWrite pen contains seeds. When you're done writing, plant it and grow herbs or flowers.</p>
+</div>
+
+</section>
+
+<section class="story">
+
+<div class="story-inner">
+<h2>Sustainable Living</h2>
+<p>From bamboo brushes to recycled crafts, our marketplace replaces plastic with nature-friendly products.</p>
+</div>
+
+</section>
+
+<section class="story">
+
+<div class="story-inner">
+<h2>Youth Powered</h2>
+<p>GreenWrite is a youth-driven mission to make eco shopping easy, affordable and global.</p>
+</div>
+
+</section>
+
+<!-- PRODUCTS -->
+
+<section class="products">
+
+<h2>Marketplace</h2>
 
 <div class="grid">
 
 <div class="card">
-<h3>Plantable Stationery</h3>
-<p>Write then plant your pen and grow herbs or flowers.</p>
+<h3>Plantable Pens</h3>
+<p>Write then plant. Grow herbs and flowers.</p>
 </div>
 
 <div class="card">
-<h3>Plastic Free Products</h3>
-<p>Bamboo brushes, bottles and eco alternatives.</p>
+<h3>Bamboo Brushes</h3>
+<p>Eco-friendly alternative to plastic.</p>
 </div>
 
 <div class="card">
-<h3>Student Innovation</h3>
-<p>GreenWrite promotes sustainability built by young entrepreneurs.</p>
+<h3>Eco Bottles</h3>
+<p>Sustainable hydration with style.</p>
+</div>
+
+<div class="card">
+<h3>Handmade Crafts</h3>
+<p>Support small sustainable artisans.</p>
 </div>
 
 </div>
 
 </section>
 
-
-<footer>
-GreenWrite © 2026
-</footer>
+<footer>GreenWrite © 2026</footer>
 
 
 <!-- THREE JS -->
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 
-const canvas = document.querySelector("#bg")
+const scene=new THREE.Scene()
 
-const scene = new THREE.Scene()
+const camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.1,1000)
+camera.position.z=5
 
-const camera = new THREE.PerspectiveCamera(
-75,
-window.innerWidth/window.innerHeight,
-0.1,
-1000
-)
-
-camera.position.z = 5
-
-const renderer = new THREE.WebGLRenderer({
-canvas:canvas,
+const renderer=new THREE.WebGLRenderer({
+canvas:document.querySelector("#bg"),
 alpha:true,
 antialias:true
 })
 
-renderer.setSize(window.innerWidth,window.innerHeight)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2))
+renderer.setSize(innerWidth,innerHeight)
 
-/* PARTICLES */
+/* EARTH */
 
-const particleCount = 4000
+const geometry=new THREE.SphereGeometry(1.2,64,64)
 
-const positions = new Float32Array(particleCount*3)
+const material=new THREE.MeshStandardMaterial({
+color:0x2aff8a,
+wireframe:false,
+metalness:.1,
+roughness:.8
+})
 
-for(let i=0;i<particleCount*3;i++){
+const earth=new THREE.Mesh(geometry,material)
 
-positions[i]=(Math.random()-0.5)*20
+scene.add(earth)
 
+const light=new THREE.PointLight(0xffffff,1.2)
+light.position.set(3,3,3)
+scene.add(light)
+
+/* LEAF PARTICLES */
+
+const count=2000
+const pos=new Float32Array(count*3)
+
+for(let i=0;i<count*3;i++){
+pos[i]=(Math.random()-0.5)*15
 }
 
-const particleGeometry = new THREE.BufferGeometry()
+const geo=new THREE.BufferGeometry()
+geo.setAttribute("position",new THREE.BufferAttribute(pos,3))
 
-particleGeometry.setAttribute(
-'position',
-new THREE.BufferAttribute(positions,3)
-)
-
-const particleMaterial = new THREE.PointsMaterial({
-size:0.03,
+const mat=new THREE.PointsMaterial({
+size:.03,
 color:"#7dff9b"
 })
 
-const particles = new THREE.Points(
-particleGeometry,
-particleMaterial
-)
+const leaves=new THREE.Points(geo,mat)
+scene.add(leaves)
 
-scene.add(particles)
-
-/* LIGHT */
-
-const light = new THREE.PointLight(0xffffff,1)
-light.position.set(5,5,5)
-scene.add(light)
-
-/* OPTIONAL 3D MODEL */
-
-const loader = new THREE.GLTFLoader()
-
-// example
-// loader.load("models/pen.glb",(gltf)=>{
-// const model = gltf.scene
-// model.scale.set(2,2,2)
-// scene.add(model)
-// })
-
-/* ANIMATION */
+/* ANIMATE */
 
 function animate(){
 
 requestAnimationFrame(animate)
 
-particles.rotation.y +=0.0006
-particles.rotation.x +=0.0002
+earth.rotation.y+=.002
+leaves.rotation.y+=.0004
 
 renderer.render(scene,camera)
 
@@ -332,27 +346,19 @@ renderer.render(scene,camera)
 
 animate()
 
-/* RESIZE */
+/* PARALLAX */
 
-window.addEventListener("resize",()=>{
-
-camera.aspect = window.innerWidth/window.innerHeight
-camera.updateProjectionMatrix()
-
-renderer.setSize(window.innerWidth,window.innerHeight)
-
+document.addEventListener("mousemove",e=>{
+earth.rotation.x=(e.clientY/innerHeight-.5)*.6
+earth.rotation.y+=(e.clientX/innerWidth-.5)*.01
 })
 
-/* MOUSE PARALLAX */
+/* RESIZE */
 
-document.addEventListener("mousemove",(event)=>{
-
-const x = (event.clientX/window.innerWidth -0.5)*0.5
-const y = (event.clientY/window.innerHeight -0.5)*0.5
-
-particles.rotation.y += x*0.02
-particles.rotation.x += y*0.02
-
+addEventListener("resize",()=>{
+camera.aspect=innerWidth/innerHeight
+camera.updateProjectionMatrix()
+renderer.setSize(innerWidth,innerHeight)
 })
 
 </script>
@@ -367,25 +373,31 @@ particles.rotation.x += y*0.02
 
 gsap.registerPlugin(ScrollTrigger)
 
-gsap.from(".hero h1",{
-y:120,
-opacity:0,
-duration:1.2
+/* HERO */
+
+gsap.from(".hero h1",{y:120,opacity:0,duration:1.2})
+gsap.from(".hero p",{y:80,opacity:0,delay:.4})
+gsap.from(".hero-buttons",{y:60,opacity:0,delay:.8})
+
+/* STORY */
+
+gsap.utils.toArray(".story").forEach(section=>{
+
+gsap.from(section.querySelector(".story-inner"),{
+
+scrollTrigger:{
+trigger:section,
+start:"top 80%"
+},
+
+y:100,
+opacity:0
+
 })
 
-gsap.from(".hero p",{
-y:80,
-opacity:0,
-delay:.4,
-duration:1
 })
 
-gsap.from(".hero-buttons",{
-y:60,
-opacity:0,
-delay:.8,
-duration:1
-})
+/* PRODUCT */
 
 gsap.from(".card",{
 
@@ -397,6 +409,38 @@ start:"top 80%"
 opacity:0,
 y:80,
 stagger:.2
+
+})
+
+</script>
+
+
+<!-- SEED PLANT CLICK -->
+
+<script>
+
+document.body.addEventListener("click",e=>{
+
+const seed=document.createElement("div")
+
+seed.style.position="fixed"
+seed.style.left=e.clientX+"px"
+seed.style.top=e.clientY+"px"
+seed.style.width="8px"
+seed.style.height="8px"
+seed.style.background="#7dff9b"
+seed.style.borderRadius="50%"
+seed.style.pointerEvents="none"
+
+document.body.appendChild(seed)
+
+gsap.to(seed,{
+y:-80,
+scale:3,
+opacity:0,
+duration:1.2,
+onComplete:()=>seed.remove()
+})
 
 })
 
