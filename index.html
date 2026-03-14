@@ -63,6 +63,85 @@ footer{text-align:center;padding:60px;opacity:.6}
 
 /* seed click particle */
 .seed{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--green);pointer-events:none}
+
+/* =============================
+MOBILE OPTIMIZATION
+============================= */
+
+@media (max-width:900px){
+
+.hero h1{
+font-size:42px;
+}
+
+.hero p{
+font-size:16px;
+}
+
+.hero-buttons{
+flex-direction:column;
+gap:15px;
+}
+
+.btn{
+padding:14px 24px;
+font-size:15px;
+}
+
+.section{
+padding:80px 8%;
+min-height:auto;
+}
+
+.section h2{
+font-size:36px;
+}
+
+.section p{
+font-size:16px;
+}
+
+.products{
+padding:100px 8%;
+}
+
+.products h2{
+font-size:36px;
+}
+
+.grid{
+grid-template-columns:1fr;
+gap:20px;
+}
+
+nav{
+padding:18px 6%;
+}
+
+.nav-links{
+display:none;
+}
+
+.logo{
+font-size:18px;
+}
+
+}
+
+/* tablet */
+
+@media (max-width:1200px){
+
+.hero h1{
+font-size:60px;
+}
+
+.section h2{
+font-size:50px;
+}
+
+}
+
 </style>
 </head>
 
@@ -688,6 +767,86 @@ repeat:-1,
 yoyo:true,
 ease:"sine.inOut"
 })
+
+</script>
+
+<script>
+
+/* ==========================
+MOBILE PERFORMANCE MODE
+========================== */
+
+const isMobile = window.innerWidth < 900
+
+if(isMobile){
+
+/* reduce particles */
+
+scene.remove(leaves)
+
+const smallCount = 400
+const pos = new Float32Array(smallCount*3)
+
+for(let i=0;i<smallCount*3;i++){
+pos[i]=(Math.random()-.5)*15
+}
+
+const geo = new THREE.BufferGeometry()
+geo.setAttribute("position", new THREE.BufferAttribute(pos,3))
+
+const mat = new THREE.PointsMaterial({
+size:.05,
+color:"#4cff8f"
+})
+
+const mobileLeaves = new THREE.Points(geo,mat)
+scene.add(mobileLeaves)
+
+/* slower rotation for mobile */
+
+gsap.to(earth.rotation,{
+y:"+=6.28",
+duration:200,
+repeat:-1,
+ease:"none"
+})
+
+}
+
+
+/* ==========================
+TOUCH DRAG PLANET
+========================== */
+
+let touching=false
+
+document.addEventListener("touchstart",()=>touching=true)
+document.addEventListener("touchend",()=>touching=false)
+
+document.addEventListener("touchmove",(e)=>{
+
+if(!touching) return
+
+const x = e.touches[0].clientX
+const y = e.touches[0].clientY
+
+targetX = (x/window.innerWidth-.5)*3
+targetY = (y/window.innerHeight-.5)*1.5
+
+})
+
+
+/* ==========================
+DISABLE CURSOR EFFECTS
+========================== */
+
+if(isMobile){
+
+const halo=document.querySelector("#cursorHalo")
+
+if(halo) halo.remove()
+
+}
 
 </script>
 
