@@ -152,78 +152,82 @@ const stars=new THREE.Points(starGeo,starMat)
 scene.add(stars)
 
 /* EARTH SHADER */
-const earthGeo = new THREE.SphereGeometry(1.2, 64, 64)
+const earthGeo = new THREE.SphereGeometry(1.2, 128, 128)
 
 const earthMat = new THREE.ShaderMaterial({
-uniforms:{time:{value:0}},
+uniforms:{ time:{value:0} },
+
 vertexShader:`
 varying vec3 vPos;
+varying vec2 vUv;
+
 void main(){
-    vPos = position;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+vPos = position;
+vUv = uv;
+gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
 }
 `,
+
 fragmentShader:`
 varying vec3 vPos;
+varying vec2 vUv;
 
 float rand(vec2 n){
-    return fract(sin(dot(n,vec2(12.9898,4.1414)))*43758.5453);
+return fract(sin(dot(n,vec2(12.9898,4.1414)))*43758.5453);
 }
 
 float noise(vec2 p){
-    vec2 ip=floor(p);
-    vec2 u=fract(p);
-    u=u*u*(3.0-2.0*u);
+vec2 ip=floor(p);
+vec2 u=fract(p);
+u=u*u*(3.0-2.0*u);
 
-    float res = mix(
-        mix(rand(ip),rand(ip+vec2(1.0,0.0)),u.x),
-        mix(rand(ip+vec2(0.0,1.0)),rand(ip+vec2(1.0,1.0)),u.x),
-        u.y
-    );
-    return res;
+float res=mix(
+mix(rand(ip),rand(ip+vec2(1.0,0.0)),u.x),
+mix(rand(ip+vec2(0.0,1.0)),rand(ip+vec2(1.0,1.0)),u.x),
+u.y);
+
+return res;
 }
 
-/* fractal noise for continent shapes */
-float fbm(vec2 p){
-    float v = 0.0;
-    float a = 0.5;
-
-    for(int i=0;i<5;i++){
-        v += a * noise(p);
-        p *= 2.0;
-        a *= 0.5;
-    }
-
-    return v;
+float fbm(vec2 x){
+float v=0.0;
+float a=.5;
+for(int i=0;i<5;i++){
+v+=a*noise(x);
+x*=2.;
+a*=.5;
+}
+return v;
 }
 
 void main(){
 
-    vec2 uv = normalize(vPos).xy;
+float n = fbm(vUv*6.0);
 
-    float n = fbm(uv * 2.0);
+/* colors */
+vec3 deepWater = vec3(0.0,0.08,0.35);
+vec3 shallowWater = vec3(0.0,0.3,0.7);
+vec3 beach = vec3(0.85,0.8,0.55);
+vec3 land = vec3(0.1,0.55,0.2);
+vec3 mountain = vec3(0.45,0.4,0.35);
 
-    vec3 water = vec3(0.0,0.25,0.65);
-    vec3 beach = vec3(0.85,0.8,0.55);
-    vec3 land = vec3(0.1,0.6,0.2);
-    vec3 mountain = vec3(0.5,0.5,0.5);
+/* terrain */
+vec3 color;
 
-    vec3 col;
+if(n < 0.45){
+color = mix(deepWater,shallowWater,n*2.0);
+}
+else if(n < 0.5){
+color = beach;
+}
+else if(n < 0.75){
+color = land;
+}
+else{
+color = mountain;
+}
 
-    if(n < 0.45){
-        col = water;
-    }
-    else if(n < 0.50){
-        col = beach;
-    }
-    else if(n < 0.75){
-        col = land;
-    }
-    else{
-        col = mountain;
-    }
-
-    gl_FragColor = vec4(col,1.0);
+gl_FragColor = vec4(color,1.0);
 }
 `
 })
