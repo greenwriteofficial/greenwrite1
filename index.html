@@ -489,5 +489,207 @@ gsap.to(seed,{y:-90,scale:3,opacity:0,duration:1,onComplete:()=>seed.remove()})
 })
 </script>
 
+<script>
+
+/* -----------------------------
+PLANET PULSE SCALE
+----------------------------- */
+
+gsap.to(earth.scale,{
+x:1.03,
+y:1.03,
+z:1.03,
+duration:3,
+repeat:-1,
+yoyo:true,
+ease:"sine.inOut"
+})
+
+
+/* -----------------------------
+LEAF SWIRL WIND EFFECT
+----------------------------- */
+
+let wind = { value:0 }
+
+gsap.to(wind,{
+value:Math.PI*2,
+duration:30,
+repeat:-1,
+ease:"none",
+onUpdate:()=>{
+
+leaves.rotation.x = Math.sin(wind.value)*0.2
+leaves.rotation.z = Math.cos(wind.value)*0.2
+
+}
+})
+
+
+/* -----------------------------
+STARFIELD DEPTH PARALLAX
+----------------------------- */
+
+document.addEventListener("mousemove",e=>{
+
+const x = (e.clientX/window.innerWidth - .5)
+const y = (e.clientY/window.innerHeight - .5)
+
+gsap.to(stars.rotation,{
+y:x*0.6,
+x:y*0.3,
+duration:2
+})
+
+})
+
+
+/* -----------------------------
+HERO TEXT SHIMMER
+----------------------------- */
+
+const heroText=document.querySelector(".hero h1")
+
+if(heroText){
+
+const shimmer=document.createElement("div")
+
+shimmer.style.position="absolute"
+shimmer.style.top="0"
+shimmer.style.left="-200%"
+shimmer.style.width="200%"
+shimmer.style.height="100%"
+shimmer.style.background="linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent)"
+shimmer.style.pointerEvents="none"
+
+heroText.style.position="relative"
+heroText.appendChild(shimmer)
+
+gsap.to(shimmer,{
+left:"200%",
+duration:4,
+repeat:-1,
+ease:"none"
+})
+
+}
+
+
+/* -----------------------------
+SECTION FADE COLOR
+----------------------------- */
+
+gsap.utils.toArray(".section").forEach(sec=>{
+
+gsap.to(sec,{
+
+backgroundColor:"rgba(10,20,20,.3)",
+
+scrollTrigger:{
+trigger:sec,
+start:"top center",
+end:"bottom center",
+scrub:1
+}
+
+})
+
+})
+
+
+/* -----------------------------
+BUTTON GLOW BREATHING
+----------------------------- */
+
+document.querySelectorAll(".btn").forEach(btn=>{
+
+gsap.to(btn,{
+boxShadow:"0 0 30px rgba(76,255,143,.7)",
+duration:2,
+repeat:-1,
+yoyo:true
+})
+
+})
+
+
+/* -----------------------------
+CARD FLOATING MOTION
+----------------------------- */
+
+document.querySelectorAll(".card").forEach(card=>{
+
+gsap.to(card,{
+y:-10,
+duration:2+Math.random(),
+repeat:-1,
+yoyo:true,
+ease:"sine.inOut"
+})
+
+})
+
+
+/* -----------------------------
+CURSOR TRAIL PARTICLES
+----------------------------- */
+
+document.addEventListener("mousemove",e=>{
+
+const dot=document.createElement("div")
+
+dot.style.position="fixed"
+dot.style.width="6px"
+dot.style.height="6px"
+dot.style.borderRadius="50%"
+dot.style.background="#4cff8f"
+dot.style.pointerEvents="none"
+dot.style.left=e.clientX+"px"
+dot.style.top=e.clientY+"px"
+
+document.body.appendChild(dot)
+
+gsap.to(dot,{
+y:-20,
+opacity:0,
+scale:2,
+duration:1,
+onComplete:()=>dot.remove()
+})
+
+})
+
+
+/* -----------------------------
+SECTION TEXT FLOAT
+----------------------------- */
+
+gsap.utils.toArray(".section h2").forEach(h=>{
+
+gsap.to(h,{
+y:15,
+duration:4,
+repeat:-1,
+yoyo:true,
+ease:"sine.inOut"
+})
+
+})
+
+
+/* -----------------------------
+PLANET LIGHT ROTATION
+----------------------------- */
+
+gsap.to(light.position,{
+x:-5,
+duration:10,
+repeat:-1,
+yoyo:true,
+ease:"sine.inOut"
+})
+
+</script>
+
 </body>
 </html>
