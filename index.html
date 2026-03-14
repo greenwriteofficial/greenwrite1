@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>GreenWrite — Eco Marketplace</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+
 :root{
---green:#7dff9b;
---bg:#04070f;
---glass:rgba(255,255,255,.06);
+--green:#4cff8f;
+--bg:#050816;
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
 
 body{
 background:var(--bg);
@@ -22,9 +30,9 @@ color:white;
 overflow-x:hidden;
 }
 
-/* CANVAS LAYERS */
+/* CANVAS */
 
-#bg,#shader{
+canvas{
 position:fixed;
 top:0;
 left:0;
@@ -41,31 +49,32 @@ top:0;
 width:100%;
 display:flex;
 justify-content:space-between;
-padding:20px 8%;
+padding:25px 8%;
+z-index:10;
 background:rgba(0,0,0,.35);
 backdrop-filter:blur(20px);
-z-index:10;
 }
 
 .logo{
-font-weight:700;
+font-weight:800;
 color:var(--green);
+font-size:22px;
 }
 
 .nav-links{
 display:flex;
-gap:30px;
+gap:35px;
 }
 
 .nav-links a{
 text-decoration:none;
 color:white;
 opacity:.8;
+font-weight:500;
 }
 
 .nav-links a:hover{
 color:var(--green);
-opacity:1;
 }
 
 /* HERO */
@@ -80,27 +89,30 @@ padding:0 20px;
 }
 
 .hero h1{
-font-size:70px;
-line-height:1.1;
+font-size:90px;
+line-height:1;
+max-width:1000px;
 }
 
-.hero span{color:var(--green);}
+.hero span{
+color:var(--green);
+}
 
 .hero p{
-margin-top:20px;
+margin-top:25px;
+font-size:20px;
 opacity:.8;
-font-size:18px;
 }
 
 .hero-buttons{
-margin-top:40px;
+margin-top:50px;
 display:flex;
+gap:25px;
 justify-content:center;
-gap:20px;
 }
 
 .btn{
-padding:16px 32px;
+padding:18px 38px;
 border-radius:40px;
 font-weight:600;
 text-decoration:none;
@@ -116,67 +128,78 @@ border:1px solid var(--green);
 color:var(--green);
 }
 
-/* STORY SECTIONS */
+/* STORY */
 
-.story{
+.section{
 min-height:120vh;
 display:flex;
 align-items:center;
 padding:120px 10%;
 }
 
-.story-inner{
-max-width:500px;
-background:var(--glass);
-padding:40px;
-border-radius:20px;
-backdrop-filter:blur(20px);
+.section-inner{
+max-width:600px;
 }
 
-.story h2{
+.section h2{
+font-size:70px;
+margin-bottom:20px;
 color:var(--green);
-margin-bottom:10px;
+}
+
+.section p{
+font-size:20px;
+opacity:.85;
+line-height:1.6;
 }
 
 /* PRODUCT GRID */
 
 .products{
-padding:140px 10%;
+padding:160px 10%;
+}
+
+.products h2{
+font-size:70px;
+margin-bottom:40px;
 }
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
 gap:40px;
-margin-top:50px;
 }
 
 .card{
-background:var(--glass);
+background:rgba(255,255,255,.06);
 padding:40px;
 border-radius:20px;
-border:1px solid rgba(255,255,255,.1);
+border:1px solid rgba(255,255,255,.12);
 transition:.4s;
 }
 
 .card:hover{
-transform:translateY(-10px);
-box-shadow:0 20px 60px rgba(0,255,120,.2);
+transform:translateY(-15px);
+box-shadow:0 20px 60px rgba(0,255,120,.25);
 }
 
-.card h3{color:var(--green);margin-bottom:10px;}
+.card h3{
+color:var(--green);
+margin-bottom:10px;
+}
 
 footer{
 text-align:center;
 padding:60px;
 opacity:.6;
 }
+
 </style>
+
 </head>
 
 <body>
 
-<canvas id="shader"></canvas>
 <canvas id="bg"></canvas>
 
 <nav>
@@ -192,48 +215,90 @@ opacity:.6;
 
 </nav>
 
+<!-- HERO -->
+
 <section class="hero">
 
 <div>
 
-<h1>Write your future.<br><span>Grow your planet.</span></h1>
+<h1>
+Write your future.<br>
+<span>Grow your planet.</span>
+</h1>
 
-<p>India's futuristic eco-friendly marketplace.</p>
+<p>
+The world's first student-built eco marketplace for sustainable products.
+</p>
 
 <div class="hero-buttons">
-<a class="btn primary">Explore Products</a>
+
+<a class="btn primary">Explore Marketplace</a>
 <a class="btn secondary">Our Mission</a>
+
 </div>
 
 </div>
 
 </section>
 
-<!-- STORY SCROLL -->
+<!-- SECTION 1 -->
 
-<section class="story">
+<section class="section">
 
-<div class="story-inner">
+<div class="section-inner">
+
 <h2>Plant the Future</h2>
-<p>Every GreenWrite pen contains seeds. When you're done writing, plant it and grow herbs or flowers.</p>
+
+<p>
+
+Every GreenWrite pen contains real seeds.  
+When your pen finishes writing its story, plant it in soil and watch it grow into herbs, flowers or vegetables.
+
+One small action.  
+One big environmental impact.
+
+</p>
+
 </div>
 
 </section>
 
-<section class="story">
+<!-- SECTION 2 -->
 
-<div class="story-inner">
+<section class="section">
+
+<div class="section-inner">
+
 <h2>Sustainable Living</h2>
-<p>From bamboo brushes to recycled crafts, our marketplace replaces plastic with nature-friendly products.</p>
+
+<p>
+
+GreenWrite isn't just stationery.
+
+Our eco marketplace brings together plastic-free products, bamboo essentials, recycled crafts, handmade goods and natural alternatives that help people live greener lives every day.
+
+</p>
+
 </div>
 
 </section>
 
-<section class="story">
+<!-- SECTION 3 -->
 
-<div class="story-inner">
+<section class="section">
+
+<div class="section-inner">
+
 <h2>Youth Powered</h2>
-<p>GreenWrite is a youth-driven mission to make eco shopping easy, affordable and global.</p>
+
+<p>
+
+GreenWrite was built by students who believe the future should be sustainable.
+
+We’re proving that innovation, technology and environmental responsibility can come together to create something meaningful.
+
+</p>
+
 </div>
 
 </section>
@@ -253,24 +318,28 @@ opacity:.6;
 
 <div class="card">
 <h3>Bamboo Brushes</h3>
-<p>Eco-friendly alternative to plastic.</p>
+<p>Eco alternative to plastic toothbrushes.</p>
 </div>
 
 <div class="card">
 <h3>Eco Bottles</h3>
-<p>Sustainable hydration with style.</p>
+<p>Reusable sustainable hydration.</p>
 </div>
 
 <div class="card">
 <h3>Handmade Crafts</h3>
-<p>Support small sustainable artisans.</p>
+<p>Support eco-friendly artisans.</p>
 </div>
 
 </div>
 
 </section>
 
-<footer>GreenWrite © 2026</footer>
+<footer>
+
+GreenWrite © 2026
+
+</footer>
 
 
 <!-- THREE JS -->
@@ -281,8 +350,14 @@ opacity:.6;
 
 const scene=new THREE.Scene()
 
-const camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.1,1000)
-camera.position.z=5
+const camera=new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+1000
+)
+
+camera.position.z=4
 
 const renderer=new THREE.WebGLRenderer({
 canvas:document.querySelector("#bg"),
@@ -290,7 +365,9 @@ alpha:true,
 antialias:true
 })
 
-renderer.setSize(innerWidth,innerHeight)
+renderer.setSize(window.innerWidth,window.innerHeight)
+
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2))
 
 /* EARTH */
 
@@ -298,47 +375,70 @@ const geometry=new THREE.SphereGeometry(1.2,64,64)
 
 const material=new THREE.MeshStandardMaterial({
 color:0x2aff8a,
-wireframe:false,
 metalness:.1,
-roughness:.8
+roughness:.7
 })
 
 const earth=new THREE.Mesh(geometry,material)
 
 scene.add(earth)
 
-const light=new THREE.PointLight(0xffffff,1.2)
-light.position.set(3,3,3)
-scene.add(light)
+/* GLOW */
 
-/* LEAF PARTICLES */
+const glow=new THREE.Mesh(
+new THREE.SphereGeometry(1.35,64,64),
+new THREE.MeshBasicMaterial({
+color:0x4cff8f,
+transparent:true,
+opacity:.25
+})
+)
 
-const count=2000
+scene.add(glow)
+
+/* PARTICLES */
+
+const count=3000
+
 const pos=new Float32Array(count*3)
 
 for(let i=0;i<count*3;i++){
-pos[i]=(Math.random()-0.5)*15
+
+pos[i]=(Math.random()-.5)*15
+
 }
 
 const geo=new THREE.BufferGeometry()
-geo.setAttribute("position",new THREE.BufferAttribute(pos,3))
+
+geo.setAttribute("position",
+new THREE.BufferAttribute(pos,3)
+)
 
 const mat=new THREE.PointsMaterial({
 size:.03,
-color:"#7dff9b"
+color:"#4cff8f"
 })
 
-const leaves=new THREE.Points(geo,mat)
-scene.add(leaves)
+const particles=new THREE.Points(geo,mat)
 
-/* ANIMATE */
+scene.add(particles)
+
+/* LIGHT */
+
+const light=new THREE.PointLight(0xffffff,1.2)
+
+light.position.set(5,5,5)
+
+scene.add(light)
+
+/* ANIMATION */
 
 function animate(){
 
 requestAnimationFrame(animate)
 
 earth.rotation.y+=.002
-leaves.rotation.y+=.0004
+particles.rotation.y+=.0006
 
 renderer.render(scene,camera)
 
@@ -349,16 +449,21 @@ animate()
 /* PARALLAX */
 
 document.addEventListener("mousemove",e=>{
-earth.rotation.x=(e.clientY/innerHeight-.5)*.6
-earth.rotation.y+=(e.clientX/innerWidth-.5)*.01
+
+earth.rotation.x=(e.clientY/window.innerHeight-.5)*.6
+earth.rotation.y+=(e.clientX/window.innerWidth-.5)*.01
+
 })
 
 /* RESIZE */
 
-addEventListener("resize",()=>{
-camera.aspect=innerWidth/innerHeight
+window.addEventListener("resize",()=>{
+
+camera.aspect=window.innerWidth/window.innerHeight
 camera.updateProjectionMatrix()
-renderer.setSize(innerWidth,innerHeight)
+
+renderer.setSize(window.innerWidth,window.innerHeight)
+
 })
 
 </script>
@@ -373,31 +478,41 @@ renderer.setSize(innerWidth,innerHeight)
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* HERO */
+gsap.from(".hero h1",{y:150,opacity:0,duration:1.2})
 
-gsap.from(".hero h1",{y:120,opacity:0,duration:1.2})
 gsap.from(".hero p",{y:80,opacity:0,delay:.4})
+
 gsap.from(".hero-buttons",{y:60,opacity:0,delay:.8})
 
-/* STORY */
+gsap.utils.toArray(".section").forEach(sec=>{
 
-gsap.utils.toArray(".story").forEach(section=>{
-
-gsap.from(section.querySelector(".story-inner"),{
+gsap.from(sec.querySelector("h2"),{
 
 scrollTrigger:{
-trigger:section,
-start:"top 80%"
+trigger:sec,
+start:"top 70%"
 },
 
-y:100,
-opacity:0
+y:120,
+opacity:0,
+duration:1
+
+})
+
+gsap.from(sec.querySelector("p"),{
+
+scrollTrigger:{
+trigger:sec,
+start:"top 70%"
+},
+
+y:80,
+opacity:0,
+delay:.3
 
 })
 
 })
-
-/* PRODUCT */
 
 gsap.from(".card",{
 
@@ -407,40 +522,8 @@ start:"top 80%"
 },
 
 opacity:0,
-y:80,
+y:100,
 stagger:.2
-
-})
-
-</script>
-
-
-<!-- SEED PLANT CLICK -->
-
-<script>
-
-document.body.addEventListener("click",e=>{
-
-const seed=document.createElement("div")
-
-seed.style.position="fixed"
-seed.style.left=e.clientX+"px"
-seed.style.top=e.clientY+"px"
-seed.style.width="8px"
-seed.style.height="8px"
-seed.style.background="#7dff9b"
-seed.style.borderRadius="50%"
-seed.style.pointerEvents="none"
-
-document.body.appendChild(seed)
-
-gsap.to(seed,{
-y:-80,
-scale:3,
-opacity:0,
-duration:1.2,
-onComplete:()=>seed.remove()
-})
 
 })
 
