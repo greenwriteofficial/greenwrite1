@@ -151,25 +151,29 @@ const starMat=new THREE.PointsMaterial({size:.02,color:"#ffffff"})
 const stars=new THREE.Points(starGeo,starMat)
 scene.add(stars)
 
-/* EARTH SHADER */
 const earthGeo = new THREE.SphereGeometry(1.2,128,128)
 
 const earthMat = new THREE.ShaderMaterial({
+
 uniforms:{
 time:{value:0},
-sunDir:{value:new THREE.Vector3(1,0,1).normalize()}
+sunDir:{value:new THREE.Vector3(3,1,2).normalize()}
 },
 
 vertexShader:`
-varying vec3 vPos;
+
 varying vec3 vNormal;
 varying vec2 vUv;
+varying vec3 vWorld;
 
 void main(){
-vPos = position;
+
 vNormal = normalize(normalMatrix * normal);
 vUv = uv;
+vWorld = (modelMatrix * vec4(position,1.0)).xyz;
+
 gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+
 }
 `,
 
@@ -178,93 +182,136 @@ fragmentShader:`
 uniform float time;
 uniform vec3 sunDir;
 
-varying vec3 vPos;
 varying vec3 vNormal;
 varying vec2 vUv;
+varying vec3 vWorld;
+
+/* noise */
 
 float rand(vec2 n){
-return fract(sin(dot(n,vec2(12.9898,4.1414)))*43758.5453);
+return fract(sin(dot(n,vec2(12.9898,78.233)))*43758.5453);
 }
 
 float noise(vec2 p){
+
 vec2 ip=floor(p);
 vec2 u=fract(p);
+
 u=u*u*(3.0-2.0*u);
 
-float res=mix(
-mix(rand(ip),rand(ip+vec2(1.,0.)),u.x),
-mix(rand(ip+vec2(0.,1.)),rand(ip+vec2(1.,1.)),u.x),
+return mix(
+mix(rand(ip),rand(ip+vec2(1,0)),u.x),
+mix(rand(ip+vec2(0,1)),rand(ip+vec2(1,1)),u.x),
 u.y);
-
-return res;
 }
 
 float fbm(vec2 x){
-float v=0.0;
+
+float v=0.;
 float a=.5;
+
 for(int i=0;i<6;i++){
 v+=a*noise(x);
 x*=2.;
 a*=.5;
 }
+
 return v;
+
 }
 
 void main(){
 
-float terrain = fbm(vUv*4.0);
+vec3 normal = normalize(vNormal);
 
-/* animated ocean waves */
-float wave = sin(vUv.x*50. + time*2.) * 0.01;
+/* continents */
 
-/* water colors */
-vec3 deepWater = vec3(0.0,0.05,0.35);
-vec3 shallowWater = vec3(0.0,0.35,0.75);
+float terrain = fbm(vUv*3.0);
+terrain += fbm(vUv*8.0)*0.2;
 
-/* land colors */
+/* ocean colors */
+
+vec3 deepOcean = vec3(0.0,0.04,0.25);
+vec3 ocean = vec3(0.0,0.3,0.7);
+
+/* land */
+
 vec3 grass = vec3(0.1,0.55,0.2);
-vec3 mountain = vec3(0.45,0.45,0.45);
+vec3 mountain = vec3(0.5,0.45,0.4);
 vec3 snow = vec3(1.0);
 
-/* choose terrain */
+/* terrain selection */
+
 vec3 color;
 
-if(terrain < 0.55){
-color = mix(deepWater,shallowWater,terrain*1.4);
-color += wave;
+if(terrain < 0.5){
+
+color = mix(deepOcean,ocean,terrain*2.0);
+
 }
 else if(terrain < 0.75){
+
 color = grass;
+
 }
 else if(terrain < 0.9){
+
 color = mountain;
+
 }
 else{
+
 color = snow;
+
 }
 
-/* day night shading */
-float light = dot(normalize(vNormal),normalize(sunDir));
-light = clamp(light,0.,1.);
+/* sunlight */
 
-/* city lights at night */
-float city = step(0.55,terrain)*step(terrain,0.7);
-vec3 cityColor = vec3(1.0,0.8,0.4)*noise(vUv*200.0);
+float sun = dot(normal,normalize(sunDir));
+sun = clamp(sun,0.0,1.0);
 
-vec3 finalColor = color * light;
+/* ocean reflection */
 
-if(light < 0.2){
-finalColor += cityColor * city * (0.2-light)*4.0;
+if(terrain < 0.5){
+
+vec3 viewDir = normalize(-vWorld);
+vec3 reflectDir = reflect(-sunDir,normal);
+
+float spec = pow(max(dot(viewDir,reflectDir),0.0),50.0);
+
+color += spec*0.6;
+
 }
+
+/* city lights */
+
+float city = step(.52,terrain)*step(terrain,.7);
+vec3 cityCol = vec3(1.0,0.8,0.5)*noise(vUv*200.0);
+
+vec3 finalColor = color * sun;
+
+if(sun < 0.2){
+
+finalColor += cityCol * city * (0.2-sun)*5.0;
+
+}
+
+/* atmospheric scattering */
+
+float atmosphere = pow(1.0 - dot(normal,vec3(0,0,1)),3.0);
+
+finalColor += vec3(0.2,0.4,1.0)*atmosphere*0.4;
 
 gl_FragColor = vec4(finalColor,1.0);
 
 }
+
 `
 })
 
 const earth = new THREE.Mesh(earthGeo,earthMat)
 scene.add(earth)
+  
 /* ATMOSPHERE */
 const glow=new THREE.Mesh(
 new THREE.SphereGeometry(1.32,64,64),
