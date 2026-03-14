@@ -152,40 +152,83 @@ const stars=new THREE.Points(starGeo,starMat)
 scene.add(stars)
 
 /* EARTH SHADER */
-const earthGeo=new THREE.SphereGeometry(1.2,64,64)
+const earthGeo = new THREE.SphereGeometry(1.2, 64, 64)
 
-const earthMat=new THREE.ShaderMaterial({
+const earthMat = new THREE.ShaderMaterial({
 uniforms:{time:{value:0}},
 vertexShader:`
 varying vec3 vPos;
 void main(){
-vPos=position;
-gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);
+    vPos = position;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
 }
 `,
 fragmentShader:`
 varying vec3 vPos;
-float rand(vec2 n){return fract(sin(dot(n,vec2(12.9898,4.1414)))*43758.5453);}
-float noise(vec2 p){
-vec2 ip=floor(p);
-vec2 u=fract(p);
-u=u*u*(3.0-2.0*u);
-float res=mix(
-mix(rand(ip),rand(ip+vec2(1,0)),u.x),
-mix(rand(ip+vec2(0,1)),rand(ip+vec2(1,1)),u.x),u.y);
-return res;
+
+float rand(vec2 n){
+    return fract(sin(dot(n,vec2(12.9898,4.1414)))*43758.5453);
 }
+
+float noise(vec2 p){
+    vec2 ip=floor(p);
+    vec2 u=fract(p);
+    u=u*u*(3.0-2.0*u);
+
+    float res = mix(
+        mix(rand(ip),rand(ip+vec2(1.0,0.0)),u.x),
+        mix(rand(ip+vec2(0.0,1.0)),rand(ip+vec2(1.0,1.0)),u.x),
+        u.y
+    );
+    return res;
+}
+
+/* fractal noise for continent shapes */
+float fbm(vec2 p){
+    float v = 0.0;
+    float a = 0.5;
+
+    for(int i=0;i<5;i++){
+        v += a * noise(p);
+        p *= 2.0;
+        a *= 0.5;
+    }
+
+    return v;
+}
+
 void main(){
-float n=noise(vPos.xy*3.0);
-vec3 water=vec3(0.0,0.25,0.6);
-vec3 land=vec3(0.1,0.6,0.2);
-vec3 col=mix(water,land,step(.55,n));
-gl_FragColor=vec4(col,1.0);
+
+    vec2 uv = normalize(vPos).xy;
+
+    float n = fbm(uv * 2.0);
+
+    vec3 water = vec3(0.0,0.25,0.65);
+    vec3 beach = vec3(0.85,0.8,0.55);
+    vec3 land = vec3(0.1,0.6,0.2);
+    vec3 mountain = vec3(0.5,0.5,0.5);
+
+    vec3 col;
+
+    if(n < 0.45){
+        col = water;
+    }
+    else if(n < 0.50){
+        col = beach;
+    }
+    else if(n < 0.75){
+        col = land;
+    }
+    else{
+        col = mountain;
+    }
+
+    gl_FragColor = vec4(col,1.0);
 }
 `
 })
 
-const earth=new THREE.Mesh(earthGeo,earthMat)
+const earth = new THREE.Mesh(earthGeo, earthMat)
 scene.add(earth)
 
 /* ATMOSPHERE */
