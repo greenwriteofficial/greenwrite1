@@ -267,12 +267,13 @@ gl_FragColor=vec4(col,1.0);
 const earth=new THREE.Mesh(earthGeo,earthMat)
 scene.add(earth)
 
-/* MOBILE EARTH SIZE FIX */
+/* LIGHT (added fix) */
+const light=new THREE.PointLight(0xffffff,1.2)
+light.position.set(5,5,5)
+scene.add(light)
 
-if(window.innerWidth < 900){
-  earth.scale.set(0.8,0.8,0.8)
-  glow.scale.set(0.8,0.8,0.8)
-}
+
+
 
 /* ATMOSPHERE */
 const glow=new THREE.Mesh(
@@ -283,6 +284,15 @@ transparent:true,
 opacity:.18
 }))
 scene.add(glow)
+
+/* MOBILE EARTH SIZE FIX (moved after glow creation) */
+if(window.innerWidth < 900){
+  earth.scale.set(0.8,0.8,0.8)
+  if(typeof glow !== "undefined"){
+    glow.scale.set(0.8,0.8,0.8)
+  }
+}
+
 
 /* LEAF PARTICLES */
 const leafGeo=new THREE.BufferGeometry()
@@ -880,6 +890,80 @@ if(halo) halo.remove()
 
 }
 
+</script>
+
+
+<!-- MOBILE APP BOTTOM NAV -->
+<div class="mobileNav">
+<a href="#">🏠</a>
+<a href="#">🌍</a>
+<a href="#">🛒</a>
+<a href="#">📦</a>
+<a href="#">👤</a>
+</div>
+
+<style>
+.mobileNav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+display:none;
+justify-content:space-around;
+align-items:center;
+background:rgba(0,0,0,.7);
+backdrop-filter:blur(20px);
+padding:12px 0;
+z-index:20;
+}
+.mobileNav a{
+color:white;
+font-size:22px;
+text-decoration:none;
+}
+.mobileNav a:active{
+transform:scale(.8);
+color:#4cff8f;
+}
+@media(max-width:900px){
+.mobileNav{display:flex;}
+}
+</style>
+
+
+<script>
+/* GYROSCOPE PLANET ROTATION */
+if(window.DeviceOrientationEvent){
+window.addEventListener("deviceorientation",(e)=>{
+if(e.beta && e.gamma){
+earth.rotation.x = e.beta * 0.01
+earth.rotation.y = e.gamma * 0.01
+}
+})
+}
+
+/* TAP PLANET -> TREE GROW */
+document.addEventListener("click",(e)=>{
+const treeGeo=new THREE.ConeGeometry(.1,.4,8)
+const treeMat=new THREE.MeshStandardMaterial({color:0x2ecc71})
+const tree=new THREE.Mesh(treeGeo,treeMat)
+tree.position.set((Math.random()-.5)*1.5,(Math.random()-.5)*1.5,(Math.random()-.5)*1.5)
+earth.add(tree)
+})
+
+/* SWIPE PRODUCT CARDS */
+const grid=document.querySelector(".grid")
+if(grid){
+let startX=0
+grid.addEventListener("touchstart",(e)=>{
+startX=e.touches[0].clientX
+})
+grid.addEventListener("touchmove",(e)=>{
+const diff=e.touches[0].clientX-startX
+grid.scrollLeft -= diff
+startX=e.touches[0].clientX
+})
+}
 </script>
 
 </body>
