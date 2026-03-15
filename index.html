@@ -267,6 +267,13 @@ gl_FragColor=vec4(col,1.0);
 const earth=new THREE.Mesh(earthGeo,earthMat)
 scene.add(earth)
 
+/* MOBILE EARTH SIZE FIX */
+
+if(window.innerWidth < 900){
+  earth.scale.set(0.8,0.8,0.8)
+  glow.scale.set(0.8,0.8,0.8)
+}
+
 /* ATMOSPHERE */
 const glow=new THREE.Mesh(
 new THREE.SphereGeometry(1.32,64,64),
@@ -558,13 +565,38 @@ opacity:0,y:80,stagger:.2
 
 <!-- seed click -->
 <script>
-document.body.addEventListener("click",e=>{
-const seed=document.createElement("div")
-seed.className="seed"
-seed.style.left=e.clientX+"px"
-seed.style.top=e.clientY+"px"
-document.body.appendChild(seed)
-gsap.to(seed,{y:-90,scale:3,opacity:0,duration:1,onComplete:()=>seed.remove()})
+/* SMOOTH TOUCH ROTATION */
+
+let lastX = 0
+let lastY = 0
+let isTouching = false
+
+document.addEventListener("touchstart",(e)=>{
+  isTouching = true
+  lastX = e.touches[0].clientX
+  lastY = e.touches[0].clientY
+})
+
+document.addEventListener("touchend",()=>{
+  isTouching = false
+})
+
+document.addEventListener("touchmove",(e)=>{
+
+if(!isTouching) return
+
+const x = e.touches[0].clientX
+const y = e.touches[0].clientY
+
+const dx = x - lastX
+const dy = y - lastY
+
+earth.rotation.y += dx * 0.005
+earth.rotation.x += dy * 0.005
+
+lastX = x
+lastY = y
+
 })
 </script>
 
